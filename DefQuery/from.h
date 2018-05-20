@@ -7,7 +7,7 @@ public:
 	from_enumerator(TIterator begin, TIterator end);
 
 	bool moveNext() override;
-	value_type& current() const override;
+	const value_type& current() const override;
 
 protected:
 	enumerator_interface<value_type>* clone() const override;
@@ -63,7 +63,7 @@ bool from_enumerator<TIterator, TValueType>::moveNext()
 }
 
 template<typename TIterator, typename TValue>
-typename from_enumerator<TIterator, TValue>::value_type& from_enumerator<TIterator, TValue>::current() const
+const typename from_enumerator<TIterator, TValue>::value_type& from_enumerator<TIterator, TValue>::current() const
 {
 	return *_current;
 }

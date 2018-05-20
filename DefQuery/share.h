@@ -8,7 +8,7 @@ public:
 	shared_enumerator(enumerator_interface<TValue>* source);
 
 	bool moveNext() override;
-	value_type& current() const override;
+	const value_type& current() const override;
 
 protected:
 	enumerator_interface<value_type>* clone() const override;
@@ -20,11 +20,10 @@ private:
 // ==============================================================================================
 
 template <typename TValue, typename TDerived>
-std::shared_ptr<shared_enumerator<TValue>> enumerator<TValue, TDerived>::share()
+shared_enumerator<TValue> enumerator<TValue, TDerived>::share()
 {
 	auto cloneOnTheHeap = clone();
-	auto wrappedClone = new shared_enumerator<TValue>(cloneOnTheHeap);
-	return std::shared_ptr<shared_enumerator<TValue>>(wrappedClone);
+	return shared_enumerator<TValue>(cloneOnTheHeap);
 }
 
 template<typename TValue>
@@ -46,7 +45,7 @@ bool shared_enumerator<TValue>::moveNext()
 }
 
 template<typename TValue>
-typename shared_enumerator<TValue>::value_type& shared_enumerator<TValue>::current() const
+const typename shared_enumerator<TValue>::value_type& shared_enumerator<TValue>::current() const
 {
 	return _source->current();
 }
@@ -54,5 +53,5 @@ typename shared_enumerator<TValue>::value_type& shared_enumerator<TValue>::curre
 template<typename TValue>
 enumerator_interface<typename shared_enumerator<TValue>::value_type>* shared_enumerator<TValue>::clone() const
 {
-	return nullptr;
+	return new shared_enumerator<TValue>(*this);
 }

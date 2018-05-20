@@ -8,28 +8,31 @@ TEST(ShareFromTest, ShareTest)
 {
 	std::array<int, 10> arr = { 1,2,3,4,5,6 };
 
-	auto enumerator = from(&arr[0], &arr[4])
+	shared_enumerator<int> enumerator = from(&arr[0], &arr[4])
 		.share();
 
-	ASSERT_TRUE(enumerator->moveNext());
-	ASSERT_EQ(1, enumerator->current());
-	ASSERT_TRUE(enumerator->moveNext());
-	ASSERT_EQ(2, enumerator->current());
-	ASSERT_TRUE(enumerator->moveNext());
-	ASSERT_EQ(3, enumerator->current());
-	ASSERT_TRUE(enumerator->moveNext());
-	ASSERT_EQ(4, enumerator->current());
-	ASSERT_FALSE(enumerator->moveNext());
-	ASSERT_FALSE(enumerator->moveNext());
+	ASSERT_TRUE(enumerator.moveNext());
+	ASSERT_EQ(1, enumerator.current());
+	ASSERT_TRUE(enumerator.moveNext());
+	ASSERT_EQ(2, enumerator.current());
+	ASSERT_TRUE(enumerator.moveNext());
+	ASSERT_EQ(3, enumerator.current());
+	ASSERT_TRUE(enumerator.moveNext());
+	ASSERT_EQ(4, enumerator.current());
+	ASSERT_FALSE(enumerator.moveNext());
+	ASSERT_FALSE(enumerator.moveNext());
 }
 
 TEST(FilterSharedTest, ShareTest)
 {
 	std::array<int, 10> arr = { 1,2,3,4,5,6 };
 
+	// At every sharing point the part before chain goes to the heap, so it makes it easy to pass it further
+	// extend it even when the current stack frame is gone.
+	// This opens up the way to real deferred query execution
 	auto enumerator = from(&arr[0], &arr[4])
 		.share()
-		->where([](int a) { return a == 3; });
+		.where([](int a) { return a == 3; });
 
 	ASSERT_TRUE(enumerator.moveNext());
 	ASSERT_EQ(3, enumerator.current());
@@ -39,15 +42,16 @@ TEST(FilterSharedTest, ShareTest)
 
 TEST(DoubleSharingTest, ShareTest)
 {
-	//std::array<int, 10> arr = { 1,2,3,4,5,6 };
+	std::array<int, 10> arr = { 1,2,3,4,5,6 };
 
-	//auto enumerator = from(&arr[0], &arr[4])
-	//	.share()
-	//	->share()
-	//	->where([](int a) { return a == 3; });
+	// Sharing along a chain is useful when independent stages add links to the query chain
+	auto enumerator = from(&arr[0], &arr[4])
+		.share()
+		.share()
+		.where([](int a) { return a == 3; });
 
-	//ASSERT_TRUE(enumerator.moveNext());
-	//ASSERT_EQ(3, enumerator.current());
-	//ASSERT_FALSE(enumerator.moveNext());
-	//ASSERT_FALSE(enumerator.moveNext());
+	ASSERT_TRUE(enumerator.moveNext());
+	ASSERT_EQ(3, enumerator.current());
+	ASSERT_FALSE(enumerator.moveNext());
+	ASSERT_FALSE(enumerator.moveNext());
 }

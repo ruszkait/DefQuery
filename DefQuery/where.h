@@ -7,7 +7,7 @@ public:
 	where_enumerator(const TSourceEnumerator& source, const TFilter& filter);
 
 	bool moveNext() override;
-	value_type& current() const override;
+	const value_type& current() const override;
 
 protected:
 	enumerator_interface<value_type>* clone() const override;
@@ -47,7 +47,7 @@ bool where_enumerator<TSourceEnumerator, TFilter>::moveNext()
 }
 
 template<typename TSourceEnumerator, typename TFilter>
-typename where_enumerator<TSourceEnumerator, TFilter>::value_type& where_enumerator<TSourceEnumerator, TFilter>::current() const
+const typename where_enumerator<TSourceEnumerator, TFilter>::value_type& where_enumerator<TSourceEnumerator, TFilter>::current() const
 {
 	return _source.current();
 }

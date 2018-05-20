@@ -52,3 +52,13 @@ TEST(FromContainerTest, FromTest)
 	ASSERT_FALSE(enumerator.moveNext());
 	ASSERT_FALSE(enumerator.moveNext());
 }
+
+TEST(FromEmptyContainerTest, FromTest)
+{
+	std::list<int> list;
+
+	auto enumerator = from(list);
+
+	ASSERT_FALSE(enumerator.moveNext());
+	ASSERT_FALSE(enumerator.moveNext());
+}
