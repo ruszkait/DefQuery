@@ -1,16 +1,16 @@
 #include "enumerator.h"
 
 template <typename TSourceEnumerator, typename TFilter>
-class where_enumerator : public enumerator<typename TSourceEnumerator::Type, where_enumerator<TSourceEnumerator, TFilter>>
+class where_enumerator : public enumerator<typename TSourceEnumerator::value_type, where_enumerator<TSourceEnumerator, TFilter>>
 {
 public:
 	where_enumerator(const TSourceEnumerator& source, const TFilter& filter);
 
 	bool moveNext() override;
-	Type& current() const override;
+	value_type& current() const override;
 
 protected:
-	enumerator_interface<Type>* clone() const override;
+	enumerator_interface<value_type>* clone() const override;
 
 private:
 	TSourceEnumerator _source;
@@ -19,9 +19,9 @@ private:
 
 // ==============================================================================================
 
-template <typename T, typename TDerived>
+template <typename TValue, typename TDerived>
 template <typename TFilter>
-where_enumerator<TDerived, TFilter> enumerator<T, TDerived>::where(const TFilter& filter)
+where_enumerator<TDerived, TFilter> enumerator<TValue, TDerived>::where(const TFilter& filter)
 {
 	return where_enumerator<TDerived, TFilter>(static_cast<TDerived&>(*this), filter);
 }
@@ -47,13 +47,13 @@ bool where_enumerator<TSourceEnumerator, TFilter>::moveNext()
 }
 
 template<typename TSourceEnumerator, typename TFilter>
-typename where_enumerator<TSourceEnumerator, TFilter>::Type& where_enumerator<TSourceEnumerator, TFilter>::current() const
+typename where_enumerator<TSourceEnumerator, TFilter>::value_type& where_enumerator<TSourceEnumerator, TFilter>::current() const
 {
 	return _source.current();
 }
 
 template<typename TSourceEnumerator, typename TFilter>
-enumerator_interface<typename where_enumerator<TSourceEnumerator, TFilter>::Type>* where_enumerator<TSourceEnumerator, TFilter>::clone() const
+enumerator_interface<typename where_enumerator<TSourceEnumerator, TFilter>::value_type>* where_enumerator<TSourceEnumerator, TFilter>::clone() const
 {
 	return new where_enumerator<TSourceEnumerator, TFilter>(*this);
 }

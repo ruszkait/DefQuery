@@ -1,58 +1,58 @@
 #include "enumerator.h"
 
-template <typename T>
-class shared_enumerator : public enumerator<T, shared_enumerator<T>>
+template <typename TValue>
+class shared_enumerator : public enumerator<TValue, shared_enumerator<TValue>>
 {
 public:
 	shared_enumerator(const shared_enumerator& other);
-	shared_enumerator(enumerator_interface<T>* source);
+	shared_enumerator(enumerator_interface<TValue>* source);
 
 	bool moveNext() override;
-	Type& current() const override;
+	value_type& current() const override;
 
 protected:
-	enumerator_interface<Type>* clone() const override;
+	enumerator_interface<value_type>* clone() const override;
 
 private:
-	std::shared_ptr<enumerator_interface<T>> _source;
+	std::shared_ptr<enumerator_interface<value_type>> _source;
 };
 
 // ==============================================================================================
 
-template <typename T, typename TDerived>
-std::shared_ptr<shared_enumerator<T>> enumerator<T, TDerived>::share()
+template <typename TValue, typename TDerived>
+std::shared_ptr<shared_enumerator<TValue>> enumerator<TValue, TDerived>::share()
 {
 	auto cloneOnTheHeap = clone();
-	auto wrappedClone = new shared_enumerator<T>(cloneOnTheHeap);
-	return std::shared_ptr<shared_enumerator<T>>(wrappedClone);
+	auto wrappedClone = new shared_enumerator<TValue>(cloneOnTheHeap);
+	return std::shared_ptr<shared_enumerator<TValue>>(wrappedClone);
 }
 
-template<typename T>
-shared_enumerator<T>::shared_enumerator(const shared_enumerator& other)
+template<typename TValue>
+shared_enumerator<TValue>::shared_enumerator(const shared_enumerator& other)
 	: _source(other._source)
 {
 }
 
-template<typename T>
-shared_enumerator<T>::shared_enumerator(enumerator_interface<T>* source)
+template<typename TValue>
+shared_enumerator<TValue>::shared_enumerator(enumerator_interface<TValue>* source)
 	: _source(source)
 {
 }
 
-template<typename T>
-bool shared_enumerator<T>::moveNext()
+template<typename TValue>
+bool shared_enumerator<TValue>::moveNext()
 {
 	return _source->moveNext();
 }
 
-template<typename T>
-typename shared_enumerator<T>::Type& shared_enumerator<T>::current() const
+template<typename TValue>
+typename shared_enumerator<TValue>::value_type& shared_enumerator<TValue>::current() const
 {
 	return _source->current();
 }
 
-template<typename T>
-enumerator_interface<typename shared_enumerator<T>::Type>* shared_enumerator<T>::clone() const
+template<typename TValue>
+enumerator_interface<typename shared_enumerator<TValue>::value_type>* shared_enumerator<TValue>::clone() const
 {
-	return NULL;
+	return nullptr;
 }

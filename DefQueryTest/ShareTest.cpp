@@ -36,3 +36,18 @@ TEST(FilterSharedTest, ShareTest)
 	ASSERT_FALSE(enumerator.moveNext());
 	ASSERT_FALSE(enumerator.moveNext());
 }
+
+TEST(DoubleSharingTest, ShareTest)
+{
+	//std::array<int, 10> arr = { 1,2,3,4,5,6 };
+
+	//auto enumerator = from(&arr[0], &arr[4])
+	//	.share()
+	//	->share()
+	//	->where([](int a) { return a == 3; });
+
+	//ASSERT_TRUE(enumerator.moveNext());
+	//ASSERT_EQ(3, enumerator.current());
+	//ASSERT_FALSE(enumerator.moveNext());
+	//ASSERT_FALSE(enumerator.moveNext());
+}

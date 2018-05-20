@@ -5,33 +5,33 @@
 template <typename TSourceEnumerator, typename TFilter>
 class where_enumerator;
 
-template <typename T>
+template <typename TValue>
 class shared_enumerator;
 
 
-template <typename T>
+template <typename TValue>
 class enumerator_interface
 {
 public:
-	using Type = T;
+	using value_type = TValue;
 
 	virtual ~enumerator_interface() = default;
 
 	virtual bool moveNext() = 0;
-	virtual Type& current() const = 0;
+	virtual value_type& current() const = 0;
 
 protected:
-	virtual enumerator_interface<Type>* clone() const = 0;
+	virtual enumerator_interface<value_type>* clone() const = 0;
 };
 
-template <typename T, typename TDerived>
-class enumerator : public enumerator_interface<T>
+template <typename TValue, typename TDerived>
+class enumerator : public enumerator_interface<TValue>
 {
 public:
-	using DerivedType = TDerived;
+	using derived_type = TDerived;
 
 	template <typename TFilter>
-	where_enumerator<DerivedType, TFilter> where(const TFilter& filter);
+	where_enumerator<derived_type, TFilter> where(const TFilter& filter);
 
-	std::shared_ptr<shared_enumerator<T>> share();
+	std::shared_ptr<shared_enumerator<TValue>> share();
 };
