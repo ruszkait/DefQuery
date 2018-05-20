@@ -1,42 +1,55 @@
 #include "enumerator.h"
 
-template <typename TContainer>
-class from_enumerator : public enumerator<typename TContainer::value_type, from_enumerator<TContainer>>
+template <typename TIterator, typename TValueType>
+class from_enumerator : public enumerator<TValueType, from_enumerator<TIterator, TValueType>>
 {
 public:
-	from_enumerator(TContainer& container);
+	from_enumerator(TIterator begin, TIterator end);
 
 	bool moveNext() override;
 	Type& current() const override;
 
 private:
-	typename TContainer::iterator _current;
-	typename TContainer::iterator _end;
+	typename TIterator _current;
+	typename TIterator _end;
 	bool _firstMoveNext;
 };
 
-template <typename TContainer>
-//from_enumerator<TContainer> from(TContainer&& container)
-from_enumerator<TContainer> from(TContainer& container)
+template <typename TValue>
+from_enumerator<TValue*, TValue> from(TValue* begin, TValue* end)
 {
-	return from_enumerator<TContainer>(container);
-//	return from_enumerator<std::remove_reference<TContainer>>(std::forward<TContainer&&>(container));
-//	return from_enumerator<TContainer>(container);
+	return from_enumerator<TValue*, TValue>(begin, end);
+}
+
+template <typename TIterator>
+from_enumerator<TIterator, typename TIterator::value_type> from(TIterator begin, TIterator end)
+{
+	return from_enumerator<TIterator, typename TIterator::value_type>(begin, end);
+}
+
+template <typename TContainer>
+from_enumerator<typename TContainer::iterator, typename TContainer::iterator::value_type> from(TContainer& container)
+{
+	return from(container.begin(), container.end());
 }
 
 // ==============================================================================================
 
-template<typename TContainer>
-from_enumerator<TContainer>::from_enumerator(TContainer & container)
-	: _current(container.begin())
-	, _end(container.end())
+template<typename TIterator, typename TValueType>
+from_enumerator<TIterator, TValueType>::from_enumerator(TIterator begin, TIterator end)
+	: _current(begin)
+	, _end(end)
 	, _firstMoveNext(true)
 {
 }
 
-template<typename TContainer>
-bool from_enumerator<TContainer>::moveNext()
+template<typename TIterator, typename TValueType>
+bool from_enumerator<TIterator, TValueType>::moveNext()
 {
+	auto containerEndHasBeenReached = _current == _end;
+	if (containerEndHasBeenReached)
+		return false;
+
 	if (_firstMoveNext)
 		_firstMoveNext = false;
 	else
@@ -46,8 +59,8 @@ bool from_enumerator<TContainer>::moveNext()
 	return containerEndHasNotBeenReached;
 }
 
-template<typename TContainer>
-typename from_enumerator<TContainer>::Type& from_enumerator<TContainer>::current() const
+template<typename TIterator, typename TValueType>
+typename from_enumerator<TIterator, TValueType>::Type& from_enumerator<TIterator, TValueType>::current() const
 {
 	return *_current;
 }

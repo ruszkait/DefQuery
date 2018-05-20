@@ -14,5 +14,5 @@ public:
 	virtual Type& current() const = 0;
 
 	template <typename TFilter>
-	where_enumerator<DerivedType, TFilter> where(TFilter filter);
+	where_enumerator<DerivedType, TFilter> where(const TFilter& filter);
 };
