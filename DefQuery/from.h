@@ -9,11 +9,16 @@ public:
 	bool moveNext() override;
 	Type& current() const override;
 
+protected:
+	enumerator_interface<Type>* clone() const override;
+
 private:
 	typename TIterator _current;
 	typename TIterator _end;
 	bool _firstMoveNext;
 };
+
+// ==============================================================================================
 
 template <typename TValue>
 from_enumerator<TValue*, TValue> from(TValue* begin, TValue* end)
@@ -32,8 +37,6 @@ from_enumerator<typename TContainer::iterator, typename TContainer::iterator::va
 {
 	return from(container.begin(), container.end());
 }
-
-// ==============================================================================================
 
 template<typename TIterator, typename TValueType>
 from_enumerator<TIterator, TValueType>::from_enumerator(TIterator begin, TIterator end)
@@ -63,4 +66,10 @@ template<typename TIterator, typename TValueType>
 typename from_enumerator<TIterator, TValueType>::Type& from_enumerator<TIterator, TValueType>::current() const
 {
 	return *_current;
+}
+
+template<typename TIterator, typename TValueType>
+enumerator_interface<typename from_enumerator<TIterator, TValueType>::Type>* from_enumerator<TIterator, TValueType>::clone() const
+{
+	return new from_enumerator<TIterator, TValueType>(*this);
 }
