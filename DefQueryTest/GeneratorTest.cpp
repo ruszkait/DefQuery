@@ -1,34 +1,30 @@
 #include "pch.h"
 
-#include "../DefQuery/enumerator.h"
+#include "../DefQuery/generator.h"
 #include "../DefQuery/where.h"
 
-class quadratic_generator : public enumerator<int, quadratic_generator>
+class quadratic_generator : public generator_enumerator<int, quadratic_generator>
 {
 public:
 	quadratic_generator()
 		: _currentIndependent(0)
-		, _firstMoveNext(true)
 	{}
 
-	bool operator++() override
+protected:
+	bool try_calculate_next(value_type& nextValue) override
 	{
-		if (_firstMoveNext)
-			_firstMoveNext = false;
-		else
-			++_currentIndependent;
+		// Calculate current value
+		nextValue = _currentIndependent * _currentIndependent;
 
-		_currentQuadratic = _currentIndependent * _currentIndependent;
+		// Move to next state
+		++_currentIndependent;
 
+		// Infinite sequence, never gets exhausted
 		return true;
 	}
 
-	const value_type& operator*() const override { return _currentQuadratic; }
-
 private:
-	int _currentQuadratic;
 	int _currentIndependent;
-	bool _firstMoveNext;
 };
 
 // ==============================================================================================
