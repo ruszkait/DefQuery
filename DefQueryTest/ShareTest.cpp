@@ -11,16 +11,16 @@ TEST(ShareFromTest, ShareTest)
 	shared_enumerator<int> enumerator = from(&arr[0], &arr[4])
 		.share();
 
-	ASSERT_TRUE(enumerator.moveNext());
-	ASSERT_EQ(1, enumerator.current());
-	ASSERT_TRUE(enumerator.moveNext());
-	ASSERT_EQ(2, enumerator.current());
-	ASSERT_TRUE(enumerator.moveNext());
-	ASSERT_EQ(3, enumerator.current());
-	ASSERT_TRUE(enumerator.moveNext());
-	ASSERT_EQ(4, enumerator.current());
-	ASSERT_FALSE(enumerator.moveNext());
-	ASSERT_FALSE(enumerator.moveNext());
+	ASSERT_TRUE(++enumerator);
+	ASSERT_EQ(1, *enumerator);
+	ASSERT_TRUE(++enumerator);
+	ASSERT_EQ(2, *enumerator);
+	ASSERT_TRUE(++enumerator);
+	ASSERT_EQ(3, *enumerator);
+	ASSERT_TRUE(++enumerator);
+	ASSERT_EQ(4, *enumerator);
+	ASSERT_FALSE(++enumerator);
+	ASSERT_FALSE(++enumerator);
 }
 
 TEST(FilterSharedTest, ShareTest)
@@ -34,10 +34,10 @@ TEST(FilterSharedTest, ShareTest)
 		.share()
 		.where([](int a) { return a == 3; });
 
-	ASSERT_TRUE(enumerator.moveNext());
-	ASSERT_EQ(3, enumerator.current());
-	ASSERT_FALSE(enumerator.moveNext());
-	ASSERT_FALSE(enumerator.moveNext());
+	ASSERT_TRUE(++enumerator);
+	ASSERT_EQ(3, *enumerator);
+	ASSERT_FALSE(++enumerator);
+	ASSERT_FALSE(++enumerator);
 }
 
 TEST(DoubleSharingTest, ShareTest)
@@ -50,8 +50,8 @@ TEST(DoubleSharingTest, ShareTest)
 		.share()
 		.where([](int a) { return a == 3; });
 
-	ASSERT_TRUE(enumerator.moveNext());
-	ASSERT_EQ(3, enumerator.current());
-	ASSERT_FALSE(enumerator.moveNext());
-	ASSERT_FALSE(enumerator.moveNext());
+	ASSERT_TRUE(++enumerator);
+	ASSERT_EQ(3, *enumerator);
+	ASSERT_FALSE(++enumerator);
+	ASSERT_FALSE(++enumerator);
 }

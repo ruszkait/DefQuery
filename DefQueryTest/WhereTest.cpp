@@ -10,14 +10,14 @@ TEST(FilterTest, FromTest)
 	auto enumerator = from(lis)
 		.where([](int a) { return a < 4 || a > 5; });
 
-	ASSERT_TRUE(enumerator.moveNext());
-	ASSERT_EQ(1, enumerator.current());
-	ASSERT_TRUE(enumerator.moveNext());
-	ASSERT_EQ(2, enumerator.current());
-	ASSERT_TRUE(enumerator.moveNext());
-	ASSERT_EQ(3, enumerator.current());
-	ASSERT_TRUE(enumerator.moveNext());
-	ASSERT_EQ(6, enumerator.current());
-	ASSERT_FALSE(enumerator.moveNext());
-	ASSERT_FALSE(enumerator.moveNext());
+	ASSERT_TRUE(++enumerator);
+	ASSERT_EQ(1, *enumerator);
+	ASSERT_TRUE(++enumerator);
+	ASSERT_EQ(2, *enumerator);
+	ASSERT_TRUE(++enumerator);
+	ASSERT_EQ(3, *enumerator);
+	ASSERT_TRUE(++enumerator);
+	ASSERT_EQ(6, *enumerator);
+	ASSERT_FALSE(++enumerator);
+	ASSERT_FALSE(++enumerator);
 }

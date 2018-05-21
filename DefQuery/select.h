@@ -6,8 +6,8 @@ class select_enumerator : public enumerator<typename TProjectedValue, select_enu
 public:
 	select_enumerator(const TSourceEnumerator& source, const TProjection& projection);
 
-	bool moveNext() override;
-	const value_type& current() const override;
+	bool operator++() override;
+	const value_type& operator*() const override;
 
 protected:
 	enumerator_interface<value_type>* clone() const override;
@@ -35,16 +35,16 @@ select_enumerator<TSourceEnumerator, TProjection, TProjectedValue>::select_enume
 }
 
 template <typename TSourceEnumerator, typename TProjection, typename TProjectedValue>
-bool select_enumerator<TSourceEnumerator, TProjection, TProjectedValue>::moveNext()
+bool select_enumerator<TSourceEnumerator, TProjection, TProjectedValue>::operator++()
 {
-	auto isSourceNotExhausted = _source.moveNext();
+	auto isSourceNotExhausted = ++_source;
 	if (isSourceNotExhausted)
-		_currentProjectedValue = _projector(_source.current());
+		_currentProjectedValue = _projector(*_source);
 	return isSourceNotExhausted;
 }
 
 template <typename TSourceEnumerator, typename TProjection, typename TProjectedValue>
-const typename select_enumerator<TSourceEnumerator, TProjection, TProjectedValue>::value_type& select_enumerator<TSourceEnumerator, TProjection, TProjectedValue>::current() const
+const typename select_enumerator<TSourceEnumerator, TProjection, TProjectedValue>::value_type& select_enumerator<TSourceEnumerator, TProjection, TProjectedValue>::operator*() const
 {
 	return _currentProjectedValue;
 }

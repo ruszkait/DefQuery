@@ -6,8 +6,8 @@ class from_enumerator : public enumerator<TValue, from_enumerator<TIterator, TVa
 public:
 	from_enumerator(TIterator begin, TIterator end);
 
-	bool moveNext() override;
-	const value_type& current() const override;
+	bool operator++() override;
+	const value_type& operator*() const override;
 
 protected:
 	enumerator_interface<value_type>* clone() const override;
@@ -47,7 +47,7 @@ from_enumerator<TIterator, TValueType>::from_enumerator(TIterator begin, TIterat
 }
 
 template<typename TIterator, typename TValueType>
-bool from_enumerator<TIterator, TValueType>::moveNext()
+bool from_enumerator<TIterator, TValueType>::operator++()
 {
 	auto containerEndHasBeenReached = _current == _end;
 	if (containerEndHasBeenReached)
@@ -63,7 +63,7 @@ bool from_enumerator<TIterator, TValueType>::moveNext()
 }
 
 template<typename TIterator, typename TValue>
-const typename from_enumerator<TIterator, TValue>::value_type& from_enumerator<TIterator, TValue>::current() const
+const typename from_enumerator<TIterator, TValue>::value_type& from_enumerator<TIterator, TValue>::operator*() const
 {
 	return *_current;
 }

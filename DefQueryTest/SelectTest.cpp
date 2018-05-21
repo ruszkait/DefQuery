@@ -10,14 +10,14 @@ TEST(ProjectionTest, SelectTest)
 	auto enumerator = from(lis)
 		.select([](int a) { return a * 1.5; });
 
-	ASSERT_TRUE(enumerator.moveNext());
-	ASSERT_EQ(1.5, enumerator.current());
-	ASSERT_TRUE(enumerator.moveNext());
-	ASSERT_EQ(3.0, enumerator.current());
-	ASSERT_TRUE(enumerator.moveNext());
-	ASSERT_EQ(4.5, enumerator.current());
-	ASSERT_FALSE(enumerator.moveNext());
-	ASSERT_FALSE(enumerator.moveNext());
+	ASSERT_TRUE(++enumerator);
+	ASSERT_EQ(1.5, *enumerator);
+	ASSERT_TRUE(++enumerator);
+	ASSERT_EQ(3.0, *enumerator);
+	ASSERT_TRUE(++enumerator);
+	ASSERT_EQ(4.5, *enumerator);
+	ASSERT_FALSE(++enumerator);
+	ASSERT_FALSE(++enumerator);
 }
 
 TEST(StructProjectionTest, SelectTest)
@@ -33,12 +33,12 @@ TEST(StructProjectionTest, SelectTest)
 	auto enumerator = from(lis)
 		.select([](const Person& a) { return a._age; });
 
-	ASSERT_TRUE(enumerator.moveNext());
-	ASSERT_EQ(10, enumerator.current());
-	ASSERT_TRUE(enumerator.moveNext());
-	ASSERT_EQ(11, enumerator.current());
-	ASSERT_TRUE(enumerator.moveNext());
-	ASSERT_EQ(20, enumerator.current());
-	ASSERT_FALSE(enumerator.moveNext());
-	ASSERT_FALSE(enumerator.moveNext());
+	ASSERT_TRUE(++enumerator);
+	ASSERT_EQ(10, *enumerator);
+	ASSERT_TRUE(++enumerator);
+	ASSERT_EQ(11, *enumerator);
+	ASSERT_TRUE(++enumerator);
+	ASSERT_EQ(20, *enumerator);
+	ASSERT_FALSE(++enumerator);
+	ASSERT_FALSE(++enumerator);
 }

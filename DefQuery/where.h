@@ -6,8 +6,8 @@ class where_enumerator : public enumerator<typename TSourceEnumerator::value_typ
 public:
 	where_enumerator(const TSourceEnumerator& source, const TFilter& filter);
 
-	bool moveNext() override;
-	const value_type& current() const override;
+	bool operator++() override;
+	const value_type& operator*() const override;
 
 protected:
 	enumerator_interface<value_type>* clone() const override;
@@ -34,11 +34,11 @@ where_enumerator<TSourceEnumerator, TFilter>::where_enumerator(const TSourceEnum
 }
 
 template<typename TSourceEnumerator, typename TFilter>
-bool where_enumerator<TSourceEnumerator, TFilter>::moveNext()
+bool where_enumerator<TSourceEnumerator, TFilter>::operator++()
 {
-	while (_source.moveNext())
+	while (++_source)
 	{
-		auto itemPassedTheFilter = _filter(_source.current());
+		auto itemPassedTheFilter = _filter(*_source);
 		if (itemPassedTheFilter)
 			return true;
 	}
@@ -47,9 +47,9 @@ bool where_enumerator<TSourceEnumerator, TFilter>::moveNext()
 }
 
 template<typename TSourceEnumerator, typename TFilter>
-const typename where_enumerator<TSourceEnumerator, TFilter>::value_type& where_enumerator<TSourceEnumerator, TFilter>::current() const
+const typename where_enumerator<TSourceEnumerator, TFilter>::value_type& where_enumerator<TSourceEnumerator, TFilter>::operator*() const
 {
-	return _source.current();
+	return *_source;
 }
 
 template<typename TSourceEnumerator, typename TFilter>

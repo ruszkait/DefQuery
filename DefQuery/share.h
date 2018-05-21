@@ -7,8 +7,8 @@ public:
 	shared_enumerator(const shared_enumerator& other);
 	shared_enumerator(enumerator_interface<TValue>* source);
 
-	bool moveNext() override;
-	const value_type& current() const override;
+	bool operator++() override;
+	const value_type& operator*() const override;
 
 protected:
 	enumerator_interface<value_type>* clone() const override;
@@ -39,15 +39,15 @@ shared_enumerator<TValue>::shared_enumerator(enumerator_interface<TValue>* sourc
 }
 
 template<typename TValue>
-bool shared_enumerator<TValue>::moveNext()
+bool shared_enumerator<TValue>::operator++()
 {
-	return _source->moveNext();
+	return ++(*_source);
 }
 
 template<typename TValue>
-const typename shared_enumerator<TValue>::value_type& shared_enumerator<TValue>::current() const
+const typename shared_enumerator<TValue>::value_type& shared_enumerator<TValue>::operator*() const
 {
-	return _source->current();
+	return **_source;
 }
 
 template<typename TValue>

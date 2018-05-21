@@ -9,16 +9,16 @@ TEST(FromPointerTest, FromTest)
 
 	auto enumerator = from(&arr[0], &arr[4]);
 
-	ASSERT_TRUE(enumerator.moveNext());
-	ASSERT_EQ(1, enumerator.current());
-	ASSERT_TRUE(enumerator.moveNext());
-	ASSERT_EQ(2, enumerator.current());
-	ASSERT_TRUE(enumerator.moveNext());
-	ASSERT_EQ(3, enumerator.current());
-	ASSERT_TRUE(enumerator.moveNext());
-	ASSERT_EQ(4, enumerator.current());
-	ASSERT_FALSE(enumerator.moveNext());
-	ASSERT_FALSE(enumerator.moveNext());
+	ASSERT_TRUE(++enumerator);
+	ASSERT_EQ(1, *enumerator);
+	ASSERT_TRUE(++enumerator);
+	ASSERT_EQ(2, *enumerator);
+	ASSERT_TRUE(++enumerator);
+	ASSERT_EQ(3, *enumerator);
+	ASSERT_TRUE(++enumerator);
+	ASSERT_EQ(4, *enumerator);
+	ASSERT_FALSE(++enumerator);
+	ASSERT_FALSE(++enumerator);
 }
 
 TEST(FromIteratorTest, FromTest)
@@ -27,14 +27,14 @@ TEST(FromIteratorTest, FromTest)
 
 	auto enumerator = from(list.begin(), list.end());
 
-	ASSERT_TRUE(enumerator.moveNext());
-	ASSERT_EQ(1, enumerator.current());
-	ASSERT_TRUE(enumerator.moveNext());
-	ASSERT_EQ(2, enumerator.current());
-	ASSERT_TRUE(enumerator.moveNext());
-	ASSERT_EQ(3, enumerator.current());
-	ASSERT_FALSE(enumerator.moveNext());
-	ASSERT_FALSE(enumerator.moveNext());
+	ASSERT_TRUE(++enumerator);
+	ASSERT_EQ(1, *enumerator);
+	ASSERT_TRUE(++enumerator);
+	ASSERT_EQ(2, *enumerator);
+	ASSERT_TRUE(++enumerator);
+	ASSERT_EQ(3, *enumerator);
+	ASSERT_FALSE(++enumerator);
+	ASSERT_FALSE(++enumerator);
 }
 
 TEST(FromContainerTest, FromTest)
@@ -43,14 +43,14 @@ TEST(FromContainerTest, FromTest)
 
 	auto enumerator = from(list);
 
-	ASSERT_TRUE(enumerator.moveNext());
-	ASSERT_EQ(1, enumerator.current());
-	ASSERT_TRUE(enumerator.moveNext());
-	ASSERT_EQ(2, enumerator.current());
-	ASSERT_TRUE(enumerator.moveNext());
-	ASSERT_EQ(3, enumerator.current());
-	ASSERT_FALSE(enumerator.moveNext());
-	ASSERT_FALSE(enumerator.moveNext());
+	ASSERT_TRUE(++enumerator);
+	ASSERT_EQ(1, *enumerator);
+	ASSERT_TRUE(++enumerator);
+	ASSERT_EQ(2, *enumerator);
+	ASSERT_TRUE(++enumerator);
+	ASSERT_EQ(3, *enumerator);
+	ASSERT_FALSE(++enumerator);
+	ASSERT_FALSE(++enumerator);
 }
 
 TEST(FromEmptyContainerTest, FromTest)
@@ -59,6 +59,6 @@ TEST(FromEmptyContainerTest, FromTest)
 
 	auto enumerator = from(list);
 
-	ASSERT_FALSE(enumerator.moveNext());
-	ASSERT_FALSE(enumerator.moveNext());
+	ASSERT_FALSE(++enumerator);
+	ASSERT_FALSE(++enumerator);
 }

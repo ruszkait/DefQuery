@@ -61,20 +61,20 @@ typename stlrange_adapter<TSourceEnumerator>::stlrange_iterator stlrange_adapter
 template<typename TSourceEnumerator>
 stlrange_adapter<TSourceEnumerator>::stlrange_iterator::stlrange_iterator(stlrange_adapter& stlrange, bool hasEnded)
 	: _stlrangeAdapter(stlrange)
-	, _hasEnded(hasEnded || !_stlrangeAdapter._source.moveNext())
+	, _hasEnded(hasEnded || !(++(_stlrangeAdapter._source)))
 {
 }
 
 template<typename TSourceEnumerator>
 const typename stlrange_adapter<TSourceEnumerator>::stlrange_iterator::value_type& stlrange_adapter<TSourceEnumerator>::stlrange_iterator::operator*() const
 {
-	return _stlrangeAdapter._source.current();
+	return *(_stlrangeAdapter._source);
 }
 
 template<typename TSourceEnumerator>
 typename stlrange_adapter<TSourceEnumerator>::stlrange_iterator& stlrange_adapter<TSourceEnumerator>::stlrange_iterator::operator++()
 {
-	_hasEnded = !_stlrangeAdapter._source.moveNext();
+	_hasEnded = !(++(_stlrangeAdapter._source));
 	return *this;
 }
 
