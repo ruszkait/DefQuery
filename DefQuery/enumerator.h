@@ -59,4 +59,13 @@ public:
 
 	// Creates an STL range from the enumerator
 	stlrange_adapter<derived_type> stlrange();
+
+protected:
+	enumerator_interface<value_type>* clone() const override;
 };
+
+template <typename TValue, typename TDerived>
+enumerator_interface<TValue>* enumerator<TValue, TDerived>::clone() const
+{
+	return new TDerived(static_cast<const TDerived&>(*this));
+}

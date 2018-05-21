@@ -9,9 +9,6 @@ public:
 	bool operator++() override;
 	const value_type& operator*() const override;
 
-protected:
-	enumerator_interface<value_type>* clone() const override;
-
 private:
 	TSourceEnumerator _source;
 	TProjection _projector;
@@ -47,10 +44,4 @@ template <typename TSourceEnumerator, typename TProjection, typename TProjectedV
 const typename select_enumerator<TSourceEnumerator, TProjection, TProjectedValue>::value_type& select_enumerator<TSourceEnumerator, TProjection, TProjectedValue>::operator*() const
 {
 	return _currentProjectedValue;
-}
-
-template <typename TSourceEnumerator, typename TProjection, typename TProjectedValue>
-enumerator_interface<typename select_enumerator<TSourceEnumerator, TProjection, TProjectedValue>::value_type>* select_enumerator<TSourceEnumerator, TProjection, TProjectedValue>::clone() const
-{
-	return new select_enumerator<TSourceEnumerator, TProjection, TProjectedValue>(*this);
 }

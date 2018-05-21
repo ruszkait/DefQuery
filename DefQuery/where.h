@@ -9,9 +9,6 @@ public:
 	bool operator++() override;
 	const value_type& operator*() const override;
 
-protected:
-	enumerator_interface<value_type>* clone() const override;
-
 private:
 	TSourceEnumerator _source;
 	TFilter _filter;
@@ -50,10 +47,4 @@ template<typename TSourceEnumerator, typename TFilter>
 const typename where_enumerator<TSourceEnumerator, TFilter>::value_type& where_enumerator<TSourceEnumerator, TFilter>::operator*() const
 {
 	return *_source;
-}
-
-template<typename TSourceEnumerator, typename TFilter>
-enumerator_interface<typename where_enumerator<TSourceEnumerator, TFilter>::value_type>* where_enumerator<TSourceEnumerator, TFilter>::clone() const
-{
-	return new where_enumerator<TSourceEnumerator, TFilter>(*this);
 }

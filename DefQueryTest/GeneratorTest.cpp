@@ -6,13 +6,24 @@
 class quadratic_generator : public enumerator<int, quadratic_generator>
 {
 public:
-	quadratic_generator();
+	quadratic_generator()
+		: _currentIndependent(0)
+		, _firstMoveNext(true)
+	{}
 
-	bool operator++() override;
-	const value_type& operator*() const override;
+	bool operator++() override
+	{
+		if (_firstMoveNext)
+			_firstMoveNext = false;
+		else
+			++_currentIndependent;
 
-protected:
-	enumerator_interface<value_type>* clone() const override;
+		_currentQuadratic = _currentIndependent * _currentIndependent;
+
+		return true;
+	}
+
+	const value_type& operator*() const override { return _currentQuadratic; }
 
 private:
 	int _currentQuadratic;
@@ -21,34 +32,6 @@ private:
 };
 
 // ==============================================================================================
-
-quadratic_generator::quadratic_generator()
-	: _currentIndependent(0)
-{
-}
-
-bool quadratic_generator::operator++()
-{
-	if (_firstMoveNext)
-		_firstMoveNext = false;
-	else
-		++_currentIndependent;
-
-	_currentQuadratic = _currentIndependent * _currentIndependent;
-
-	return true;
-}
-
-const quadratic_generator::value_type& quadratic_generator::operator*() const
-{
-	return _currentQuadratic;
-}
-
-enumerator_interface<quadratic_generator::value_type>* quadratic_generator::clone() const
-{
-	return new quadratic_generator(*this);
-}
-
 
 TEST(QuadraticTest, GeneratorTest)
 {

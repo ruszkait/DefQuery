@@ -9,9 +9,6 @@ public:
 	bool operator++() override;
 	const value_type& operator*() const override;
 
-protected:
-	enumerator_interface<value_type>* clone() const override;
-
 private:
 	typename TIterator _current;
 	typename TIterator _end;
@@ -66,10 +63,4 @@ template<typename TIterator, typename TValue>
 const typename from_enumerator<TIterator, TValue>::value_type& from_enumerator<TIterator, TValue>::operator*() const
 {
 	return *_current;
-}
-
-template<typename TIterator, typename TValueType>
-enumerator_interface<typename from_enumerator<TIterator, TValueType>::value_type>* from_enumerator<TIterator, TValueType>::clone() const
-{
-	return new from_enumerator<TIterator, TValueType>(*this);
 }

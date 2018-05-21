@@ -10,9 +10,6 @@ public:
 	bool operator++() override;
 	const value_type& operator*() const override;
 
-protected:
-	enumerator_interface<value_type>* clone() const override;
-
 private:
 	std::shared_ptr<enumerator_interface<value_type>> _source;
 };
@@ -48,10 +45,4 @@ template<typename TValue>
 const typename shared_enumerator<TValue>::value_type& shared_enumerator<TValue>::operator*() const
 {
 	return **_source;
-}
-
-template<typename TValue>
-enumerator_interface<typename shared_enumerator<TValue>::value_type>* shared_enumerator<TValue>::clone() const
-{
-	return new shared_enumerator<TValue>(*this);
 }
