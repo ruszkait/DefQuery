@@ -5,7 +5,7 @@
 #include "../DefQuery/from.h"
 #include "../DefQuery/stlrange.h"
 
-TEST(ForTest, StlRangeTest)
+TEST(StlRangeTest, ForTest)
 {
 	std::list<int> copiedValues;
 	std::array<int, 10> arr = { 1,2,3,4,5,6 };
@@ -19,7 +19,7 @@ TEST(ForTest, StlRangeTest)
 	ASSERT_EQ(expectedValues, copiedValues);
 }
 
-TEST(AlgorithmTest, StlRangeTest)
+TEST(StlRangeTest, AlgorithmTest)
 {
 	std::list<int> copiedValues;
 	std::array<int, 10> arr = { 1,2,3,4,5,6 };

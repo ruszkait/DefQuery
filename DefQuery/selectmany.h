@@ -4,20 +4,18 @@ template <typename TSourceEnumerator, typename TEnumeratorProjection, typename T
 class selectmany_enumerator : public enumerator<typename TProjectedEnumeratorValue, selectmany_enumerator<TSourceEnumerator, TEnumeratorProjection, TProjectedEnumeratorValue>>
 {
 public:
-	using projected_enumerator_type = typename TProjectedValue = std::result_of<TEnumeratorProjection(value_type&)>::type;
+	using projected_enumerator_type = typename std::result_of<TEnumeratorProjection(const typename TSourceEnumerator::value_type&)>::type;
 
 	selectmany_enumerator(const TSourceEnumerator& source, const TEnumeratorProjection& projection);
 
-	bool moveNext() override;
-	const value_type& current() const override;
-
-protected:
-	enumerator_interface<value_type>* clone() const override;
+	bool operator++() override;
+	const value_type& operator*() const override;
 
 private:
 	TSourceEnumerator _source;
 	TEnumeratorProjection _projector;
 	projected_enumerator_type _currentProjectedEnumerator;
+	value_type _currentProjectedValue;
 };
 
 // ==============================================================================================
@@ -37,22 +35,25 @@ selectmany_enumerator<TSourceEnumerator, TEnumeratorProjection, TProjectedEnumer
 }
 
 template <typename TSourceEnumerator, typename TEnumeratorProjection, typename TProjectedEnumeratorValue>
-bool selectmany_enumerator<TSourceEnumerator, TEnumeratorProjection, TProjectedEnumeratorValue>::moveNext()
+bool selectmany_enumerator<TSourceEnumerator, TEnumeratorProjection, TProjectedEnumeratorValue>::operator++()
 {
-	auto isSourceNotExhausted = _source.moveNext();
-	if (isSourceNotExhausted)
-		_currentProjectedValue = _projector(_source.current());
-	return isSourceNotExhausted;
+	auto currentProjectedEnumeratorExhausted = !++_currentProjectedEnumerator;
+	while (currentProjectedEnumeratorExhausted)
+	{
+		auto sourceIsExhausted = !++_source;
+		if (sourceIsExhausted)
+			return false;
+
+		_currentProjectedEnumerator = _projector(*_source);
+		currentProjectedEnumeratorExhausted = !++_currentProjectedEnumerator;
+	}
+
+	_currentProjectedValue = *_currentProjectedEnumerator;
+	return true;
 }
 
 template <typename TSourceEnumerator, typename TEnumeratorProjection, typename TProjectedEnumeratorValue>
-const typename selectmany_enumerator<TSourceEnumerator, TEnumeratorProjection, TProjectedEnumeratorValue>::value_type& selectmany_enumerator<TSourceEnumerator, TEnumeratorProjection, TProjectedEnumeratorValue>::current() const
+const typename selectmany_enumerator<TSourceEnumerator, TEnumeratorProjection, TProjectedEnumeratorValue>::value_type& selectmany_enumerator<TSourceEnumerator, TEnumeratorProjection, TProjectedEnumeratorValue>::operator*() const
 {
 	return _currentProjectedValue;
-}
-
-template <typename TSourceEnumerator, typename TEnumeratorProjection, typename TProjectedEnumeratorValue>
-enumerator_interface<typename selectmany_enumerator<TSourceEnumerator, TEnumeratorProjection, TProjectedEnumeratorValue>::value_type>* selectmany_enumerator<TSourceEnumerator, TEnumeratorProjection, TProjectedEnumeratorValue>::clone() const
-{
-	return new selectmany_enumerator<TSourceEnumerator, TEnumeratorProjection, TProjectedEnumeratorValue>(*this);
 }

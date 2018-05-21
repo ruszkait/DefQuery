@@ -3,7 +3,7 @@
 #include <array>
 #include "../DefQuery/from.h"
 
-TEST(FromPointerTest, FromTest)
+TEST(FromTest, FromPointerTest)
 {
 	std::array<int, 10> arr = { 1,2,3,4,5,6 };
 
@@ -21,7 +21,7 @@ TEST(FromPointerTest, FromTest)
 	ASSERT_FALSE(++enumerator);
 }
 
-TEST(FromIteratorTest, FromTest)
+TEST(FromTest, FromIteratorTest)
 {
 	std::list<int> list = { 1,2,3 };
 
@@ -37,7 +37,7 @@ TEST(FromIteratorTest, FromTest)
 	ASSERT_FALSE(++enumerator);
 }
 
-TEST(FromContainerTest, FromTest)
+TEST(FromTest, FromContainerTest)
 {
 	std::list<int> list = { 1,2,3 };
 
@@ -53,7 +53,7 @@ TEST(FromContainerTest, FromTest)
 	ASSERT_FALSE(++enumerator);
 }
 
-TEST(FromEmptyContainerTest, FromTest)
+TEST(FromTest, FromEmptyContainerTest)
 {
 	std::list<int> list;
 

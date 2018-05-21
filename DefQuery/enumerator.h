@@ -1,12 +1,15 @@
 #pragma once
 
-#include <memory>
+#include <type_traits>
 
 template <typename TSourceEnumerator, typename TFilter>
 class where_enumerator;
 
 template <typename TSourceEnumerator, typename TProjection, typename TProjectedValue>
 class select_enumerator;
+
+template <typename TSourceEnumerator, typename TEnumeratorProjection, typename TProjectedEnumeratorValue>
+class selectmany_enumerator;
 
 template <typename TSourceEnumerator>
 class stlrange_adapter;
@@ -44,13 +47,12 @@ public:
 	where_enumerator<derived_type, TFilter> where(const TFilter& filter);
 
 	// Transforms the source value to another type
-	template <typename TProjection, typename TProjectedValue = std::result_of<TProjection(value_type&)>::type>
-//	template <typename TProjection, typename TProjectedValue = std::invoke_result<TProjection, value_type&>::type>
+	template <typename TProjection, typename TProjectedValue = std::result_of<TProjection(const value_type&)>::type>
 	select_enumerator<derived_type, TProjection, TProjectedValue> select(const TProjection& projector);
 
 	// Flattens out a hierarchical container structure
-	//template <typename TEnumeratorProjection, typename TProjectedEnumeratorValue = std::result_of<TEnumeratorProjection(value_type&)>::type::value_type>
-	//selectmany_enumerator<derived_type, TEnumeratorProjection, TProjectedEnumeratorValue> selectmany(const TEnumeratorProjection& projector);
+	template <typename TEnumeratorProjection, typename TProjectedEnumeratorValue = std::result_of<TEnumeratorProjection(const typename derived_type::value_type&)>::type::value_type >
+	selectmany_enumerator<derived_type, TEnumeratorProjection, TProjectedEnumeratorValue> selectmany(const TEnumeratorProjection& projector);
 
 	// Erases the underlying decorator chain type and provides an stream value oriented interface.
 	// Creates a shared pointer wrapper. This wrapper can be passed around by value cheap.

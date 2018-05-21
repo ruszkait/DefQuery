@@ -3,7 +3,7 @@
 #include "../DefQuery/from.h"
 #include "../DefQuery/select.h"
 
-TEST(ProjectionTest, SelectTest)
+TEST(SelectTest, ProjectionTest)
 {
 	std::list<int> lis = { 1,2,3 };
 
@@ -20,7 +20,7 @@ TEST(ProjectionTest, SelectTest)
 	ASSERT_FALSE(++enumerator);
 }
 
-TEST(StructProjectionTest, SelectTest)
+TEST(SelectTest, StructProjectionTest)
 {
 	struct Person
 	{
@@ -31,7 +31,7 @@ TEST(StructProjectionTest, SelectTest)
 	std::vector<Person> lis = { Person{ "Oliver", 10 }, Person{ "Hanna", 11 }, Person{ "Peter", 20 } };
 
 	auto enumerator = from(lis)
-		.select([](const Person& a) { return a._age; });
+		.select([](const Person& person) { return person._age; });
 
 	ASSERT_TRUE(++enumerator);
 	ASSERT_EQ(10, *enumerator);

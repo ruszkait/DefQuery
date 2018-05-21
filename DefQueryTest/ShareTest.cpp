@@ -4,7 +4,7 @@
 #include "../DefQuery/where.h"
 #include "../DefQuery/share.h"
 
-TEST(ShareFromTest, ShareTest)
+TEST(ShareTest, ShareFromTest)
 {
 	std::array<int, 10> arr = { 1,2,3,4,5,6 };
 
@@ -23,7 +23,7 @@ TEST(ShareFromTest, ShareTest)
 	ASSERT_FALSE(++enumerator);
 }
 
-TEST(FilterSharedTest, ShareTest)
+TEST(ShareTest, FilterSharedTest)
 {
 	std::array<int, 10> arr = { 1,2,3,4,5,6 };
 
@@ -32,7 +32,7 @@ TEST(FilterSharedTest, ShareTest)
 	// This opens up the way to real deferred query execution
 	auto enumerator = from(&arr[0], &arr[4])
 		.share()
-		.where([](int a) { return a == 3; });
+		.where([](const int a) { return a == 3; });
 
 	ASSERT_TRUE(++enumerator);
 	ASSERT_EQ(3, *enumerator);
@@ -40,7 +40,7 @@ TEST(FilterSharedTest, ShareTest)
 	ASSERT_FALSE(++enumerator);
 }
 
-TEST(DoubleSharingTest, ShareTest)
+TEST(ShareTest, DoubleSharingTest)
 {
 	std::array<int, 10> arr = { 1,2,3,4,5,6 };
 
@@ -48,7 +48,7 @@ TEST(DoubleSharingTest, ShareTest)
 	auto enumerator = from(&arr[0], &arr[4])
 		.share()
 		.share()
-		.where([](int a) { return a == 3; });
+		.where([](const int a) { return a == 3; });
 
 	ASSERT_TRUE(++enumerator);
 	ASSERT_EQ(3, *enumerator);

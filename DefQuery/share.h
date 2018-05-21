@@ -1,5 +1,7 @@
 #include "enumerator.h"
 
+#include <memory>
+
 template <typename TValue>
 class shared_enumerator : public enumerator<TValue, shared_enumerator<TValue>>
 {

@@ -29,10 +29,10 @@ private:
 
 // ==============================================================================================
 
-TEST(QuadraticTest, GeneratorTest)
+TEST(GeneratorTest, QuadraticTest)
 {
 	auto evenQuadraticNumbers = quadratic_generator()
-		.where([](int a) { return a % 2 == 0; });
+		.where([](const int a) { return a % 2 == 0; });
 
 	ASSERT_TRUE(++evenQuadraticNumbers);
 	ASSERT_EQ(0, *evenQuadraticNumbers);

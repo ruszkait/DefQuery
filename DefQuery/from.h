@@ -4,6 +4,7 @@ template <typename TIterator, typename TValue>
 class from_enumerator : public enumerator<TValue, from_enumerator<TIterator, TValue>>
 {
 public:
+	from_enumerator();
 	from_enumerator(TIterator begin, TIterator end);
 
 	bool operator++() override;
@@ -30,9 +31,15 @@ from_enumerator<TIterator, typename TIterator::value_type> from(TIterator begin,
 }
 
 template <typename TContainer>
-from_enumerator<typename TContainer::iterator, typename TContainer::iterator::value_type> from(TContainer& container)
+from_enumerator<typename TContainer::const_iterator, typename TContainer::const_iterator::value_type> from(const TContainer& container)
 {
 	return from(container.begin(), container.end());
+}
+
+template<typename TIterator, typename TValue>
+from_enumerator<TIterator, TValue>::from_enumerator()
+	: from_enumerator(TIterator(), TIterator())
+{
 }
 
 template<typename TIterator, typename TValueType>
