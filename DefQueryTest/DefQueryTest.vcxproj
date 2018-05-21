@@ -45,6 +45,7 @@
     </ClCompile>
     <ClCompile Include="SelectTest.cpp" />
     <ClCompile Include="ShareTest.cpp" />
+    <ClCompile Include="StlRangeTest.cpp" />
     <ClCompile Include="WhereTest.cpp" />
   </ItemGroup>
   <ItemGroup>

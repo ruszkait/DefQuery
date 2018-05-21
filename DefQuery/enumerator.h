@@ -8,6 +8,9 @@ class where_enumerator;
 template <typename TSourceEnumerator, typename TProjection, typename TProjectedValue>
 class select_enumerator;
 
+template <typename TSourceEnumerator>
+class stlrange_adapter;
+
 template <typename TValue>
 class shared_enumerator;
 
@@ -42,8 +45,15 @@ public:
 //	template <typename TProjection, typename TProjectedValue = std::invoke_result<TProjection, value_type&>::type>
 	select_enumerator<derived_type, TProjection, TProjectedValue> select(const TProjection& projector);
 
+	// Flattens out a hierarchical container structure
+	//template <typename TEnumeratorProjection, typename TProjectedEnumeratorValue = std::result_of<TEnumeratorProjection(value_type&)>::type::value_type>
+	//selectmany_enumerator<derived_type, TEnumeratorProjection, TProjectedEnumeratorValue> selectmany(const TEnumeratorProjection& projector);
+
 	// Erases the underlying decorator chain type and provides an stream value oriented interface.
 	// Creates a shared pointer wrapper. This wrapper can be passed around by value cheap.
 	// Then the shared enumerator can be further decorated by other enumerators.
-	shared_enumerator<TValue> share();
+	shared_enumerator<value_type> share();
+
+	// Creates an STL range from the enumerator
+	stlrange_adapter<derived_type> stlrange();
 };
