@@ -7,10 +7,13 @@ public:
 	from_enumerator();
 	from_enumerator(TIterator begin, TIterator end);
 
-	bool operator++() override;
-	const value_type& operator*() const override;
+	bool operator++();
+	const value_type& operator*() const;
 
 private:
+	bool move_next() override { return this->operator++(); }
+	const value_type& current() const { return this->operator*(); }
+
 	typename TIterator _current;
 	typename TIterator _end;
 	bool _firstMoveNext;

@@ -6,10 +6,13 @@ class select_enumerator : public enumerator<typename TProjectedValue, select_enu
 public:
 	select_enumerator(const TSourceEnumerator& source, const TProjection& projection);
 
-	bool operator++() override;
-	const value_type& operator*() const override;
+	bool operator++();
+	const value_type& operator*() const;
 
 private:
+	bool move_next() override { return this->operator++(); }
+	const value_type& current() const { return this->operator*(); }
+
 	TSourceEnumerator _source;
 	TProjection _projector;
 	TProjectedValue _currentProjectedValue;

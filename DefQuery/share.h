@@ -9,10 +9,13 @@ public:
 	shared_enumerator(const shared_enumerator& other);
 	shared_enumerator(enumerator_interface<TValue>* source);
 
-	bool operator++() override;
-	const value_type& operator*() const override;
+	bool operator++();
+	const value_type& operator*() const;
 
 private:
+	bool move_next() override { return this->operator++(); }
+	const value_type& current() const { return this->operator*(); }
+
 	std::shared_ptr<enumerator_interface<value_type>> _source;
 };
 
@@ -40,11 +43,11 @@ shared_enumerator<TValue>::shared_enumerator(enumerator_interface<TValue>* sourc
 template<typename TValue>
 bool shared_enumerator<TValue>::operator++()
 {
-	return ++(*_source);
+	return _source->move_next();
 }
 
 template<typename TValue>
 const typename shared_enumerator<TValue>::value_type& shared_enumerator<TValue>::operator*() const
 {
-	return **_source;
+	return _source->current();
 }

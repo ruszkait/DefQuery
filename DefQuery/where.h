@@ -6,10 +6,13 @@ class where_enumerator : public enumerator<typename TSourceEnumerator::value_typ
 public:
 	where_enumerator(const TSourceEnumerator& source, const TFilter& filter);
 
-	bool operator++() override;
-	const value_type& operator*() const override;
+	bool operator++();
+	const value_type& operator*() const;
 
 private:
+	bool move_next() override { return this->operator++(); }
+	const value_type& current() const { return this->operator*(); }
+
 	TSourceEnumerator _source;
 	TFilter _filter;
 };

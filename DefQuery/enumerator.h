@@ -27,10 +27,10 @@ public:
 	virtual ~enumerator_interface() = default;
 
 	// Produces the next element, returns false if the enumeration has exhausted
-	virtual bool operator++() = 0;
+	virtual bool move_next() = 0;
 
 	// Provides the last produced element
-	virtual const value_type& operator*() const = 0;
+	virtual const value_type& current() const = 0;
 
 protected:
 	virtual enumerator_interface<value_type>* clone() const = 0;
