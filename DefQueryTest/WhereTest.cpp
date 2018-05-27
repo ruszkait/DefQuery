@@ -7,7 +7,7 @@ TEST(WhereTest, FilterTest)
 {
 	std::list<int> lis = { 1,2,3,4,5,6 };
 
-	auto enumerator = from(lis)
+	auto enumerator = DefQuery::from(lis)
 		.where([](const int a) { return a < 4 || a > 5; });
 
 	ASSERT_TRUE(++enumerator);

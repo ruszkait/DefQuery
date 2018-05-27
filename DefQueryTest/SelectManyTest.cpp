@@ -18,8 +18,8 @@ TEST(SelectManyTest, StructSubcontainerTest)
 		Person{ "Peter", 20, { "dog", "bird" } }
 	};
 
-	auto enumerator = from(lis)
-		.selectmany([](const Person& person) { return from(person._pets); });
+	auto enumerator = DefQuery::from(lis)
+		.selectmany([](const Person& person) { return DefQuery::from(person._pets); });
 
 	ASSERT_TRUE(++enumerator);
 	ASSERT_EQ("dog", *enumerator);

@@ -7,7 +7,7 @@ TEST(FromTest, FromPointerTest)
 {
 	std::array<int, 10> arr = { 1,2,3,4,5,6 };
 
-	auto enumerator = from(&arr[0], &arr[4]);
+	auto enumerator = DefQuery::from(&arr[0], &arr[4]);
 
 	ASSERT_TRUE(++enumerator);
 	ASSERT_EQ(1, *enumerator);
@@ -25,7 +25,7 @@ TEST(FromTest, FromIteratorTest)
 {
 	std::list<int> list = { 1,2,3 };
 
-	auto enumerator = from(list.begin(), list.end());
+	auto enumerator = DefQuery::from(list.begin(), list.end());
 
 	ASSERT_TRUE(++enumerator);
 	ASSERT_EQ(1, *enumerator);
@@ -41,7 +41,7 @@ TEST(FromTest, FromContainerTest)
 {
 	std::list<int> list = { 1,2,3 };
 
-	auto enumerator = from(list);
+	auto enumerator = DefQuery::from(list);
 
 	ASSERT_TRUE(++enumerator);
 	ASSERT_EQ(1, *enumerator);
@@ -57,7 +57,7 @@ TEST(FromTest, FromEmptyContainerTest)
 {
 	std::list<int> list;
 
-	auto enumerator = from(list);
+	auto enumerator = DefQuery::from(list);
 
 	ASSERT_FALSE(++enumerator);
 	ASSERT_FALSE(++enumerator);

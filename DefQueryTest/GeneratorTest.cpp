@@ -5,7 +5,7 @@
 
 TEST(GeneratorTest, QuadraticTest)
 {
-	auto evenQuadraticNumbers = generator<int>([_currentIndependent = 0] (int& nextValue) mutable
+	auto evenQuadraticNumbers = DefQuery::generator<int>([_currentIndependent = 0] (int& nextValue) mutable
 		{
 			// Calculate current value
 			nextValue = _currentIndependent * _currentIndependent;

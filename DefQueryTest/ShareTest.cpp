@@ -8,7 +8,7 @@ TEST(ShareTest, ShareFromTest)
 {
 	std::array<int, 10> arr = { 1,2,3,4,5,6 };
 
-	shared_enumerator<int> enumerator = from(&arr[0], &arr[4])
+	DefQuery::shared_enumerator<int> enumerator = DefQuery::from(&arr[0], &arr[4])
 		.share();
 
 	ASSERT_TRUE(++enumerator);
@@ -30,7 +30,7 @@ TEST(ShareTest, FilterSharedTest)
 	// At every sharing point the part before chain goes to the heap, so it makes it easy to pass it further
 	// extend it even when the current stack frame is gone.
 	// This opens up the way to real deferred query execution
-	auto enumerator = from(&arr[0], &arr[4])
+	auto enumerator = DefQuery::from(&arr[0], &arr[4])
 		.share()
 		.where([](const int a) { return a == 3; });
 
@@ -45,7 +45,7 @@ TEST(ShareTest, DoubleSharingTest)
 	std::array<int, 10> arr = { 1,2,3,4,5,6 };
 
 	// Sharing along a chain is useful when independent stages add links to the query chain
-	auto enumerator = from(&arr[0], &arr[4])
+	auto enumerator = DefQuery::from(&arr[0], &arr[4])
 		.share()
 		.share()
 		.where([](const int a) { return a == 3; });

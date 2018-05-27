@@ -7,7 +7,7 @@ TEST(SelectTest, ProjectionTest)
 {
 	std::list<int> lis = { 1,2,3 };
 
-	auto enumerator = from(lis)
+	auto enumerator = DefQuery::from(lis)
 		.select([](int a) { return a * 1.5; });
 
 	ASSERT_TRUE(++enumerator);
@@ -30,7 +30,7 @@ TEST(SelectTest, StructProjectionTest)
 
 	std::vector<Person> lis = { Person{ "Oliver", 10 }, Person{ "Hanna", 11 }, Person{ "Peter", 20 } };
 
-	auto enumerator = from(lis)
+	auto enumerator = DefQuery::from(lis)
 		.select([](const Person& person) { return person._age; });
 
 	ASSERT_TRUE(++enumerator);
