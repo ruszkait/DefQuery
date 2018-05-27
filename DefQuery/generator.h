@@ -1,10 +1,11 @@
 #include "../DefQuery/enumerator.h"
+#include <functional>
 
-template<typename TValue, typename TDerived>
-class generator_enumerator : public enumerator<TValue, TDerived>
+template<typename TValue>
+class generator_enumerator : public enumerator<TValue, generator_enumerator<TValue>>
 {
 public:
-	generator_enumerator() = default;
+	generator_enumerator(const std::function<bool(TValue&)>& yieldCalculator);
 
 	generator_enumerator(const generator_enumerator& other) = default;
 	generator_enumerator(generator_enumerator&& other) = default;
@@ -18,23 +19,33 @@ protected:
 	bool move_next() override { return this->operator++(); }
 	const value_type& current() const { return this->operator*(); }
 
-	virtual bool try_calculate_next(TValue& nextValue) = 0;
-
 private:
+	std::function<bool(TValue&)> _yieldCalculator;
 	TValue _current;
 };
 
 // ==============================================================================================
 
-template<typename TValue, typename TDerived>
-bool generator_enumerator<TValue, TDerived>::operator++()
+template<typename TValue>
+generator_enumerator<TValue> generator(const std::function<bool(TValue&)>& yieldCalculator)
 {
-	auto notExhausted = try_calculate_next(_current);
+	return generator_enumerator<TValue>(yieldCalculator);
+}
+
+template<typename TValue>
+generator_enumerator<TValue>::generator_enumerator(const std::function<bool(TValue&)>& yieldCalculator)
+	: _yieldCalculator(yieldCalculator)
+{}
+
+template<typename TValue>
+bool generator_enumerator<TValue>::operator++()
+{
+	auto notExhausted = _yieldCalculator(_current);
 	return notExhausted;
 }
 
-template<typename TValue, typename TDerived>
-const typename generator_enumerator<TValue, TDerived>::value_type& generator_enumerator<TValue, TDerived>::operator*() const
+template<typename TValue>
+const typename generator_enumerator<TValue>::value_type& generator_enumerator<TValue>::operator*() const
 {
 	return _current;
 }
