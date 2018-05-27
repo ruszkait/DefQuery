@@ -6,8 +6,12 @@ template <typename TValue>
 class shared_enumerator : public enumerator<TValue, shared_enumerator<TValue>>
 {
 public:
-	shared_enumerator(const shared_enumerator& other);
 	shared_enumerator(enumerator_interface<TValue>* source);
+
+	shared_enumerator(const shared_enumerator& other) = default;
+	shared_enumerator(shared_enumerator&& other) = default;
+	shared_enumerator& operator=(const shared_enumerator& other) = default;
+	shared_enumerator& operator=(shared_enumerator&& other) = default;
 
 	bool operator++();
 	const value_type& operator*() const;
@@ -26,12 +30,6 @@ shared_enumerator<TValue> enumerator<TValue, TDerived>::share()
 {
 	auto cloneOnTheHeap = clone();
 	return shared_enumerator<TValue>(cloneOnTheHeap);
-}
-
-template<typename TValue>
-shared_enumerator<TValue>::shared_enumerator(const shared_enumerator& other)
-	: _source(other._source)
-{
 }
 
 template<typename TValue>

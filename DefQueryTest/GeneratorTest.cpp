@@ -10,6 +10,11 @@ public:
 		: _currentIndependent(0)
 	{}
 
+	quadratic_generator(const quadratic_generator& other) = default;
+	quadratic_generator(quadratic_generator&& other) = default;
+	quadratic_generator& operator=(const quadratic_generator& other) = default;
+	quadratic_generator& operator=(quadratic_generator&& other) = default;
+
 protected:
 	bool try_calculate_next(value_type& nextValue) override
 	{

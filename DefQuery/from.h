@@ -7,6 +7,11 @@ public:
 	from_enumerator();
 	from_enumerator(TIterator begin, TIterator end);
 
+	from_enumerator(const from_enumerator& other) = default;
+	from_enumerator(from_enumerator&& other) = default;
+	from_enumerator& operator=(const from_enumerator& other) = default;
+	from_enumerator& operator=(from_enumerator&& other) = default;
+
 	bool operator++();
 	const value_type& operator*() const;
 

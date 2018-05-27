@@ -6,6 +6,11 @@ class where_enumerator : public enumerator<typename TSourceEnumerator::value_typ
 public:
 	where_enumerator(const TSourceEnumerator& source, const TFilter& filter);
 
+	where_enumerator(const where_enumerator& other) = default;
+	where_enumerator(where_enumerator&& other) = default;
+	where_enumerator& operator=(const where_enumerator& other) = default;
+	where_enumerator& operator=(where_enumerator&& other) = default;
+
 	bool operator++();
 	const value_type& operator*() const;
 

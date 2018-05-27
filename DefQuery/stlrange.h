@@ -11,6 +11,11 @@ public:
 	public:
 		stlrange_iterator(stlrange_adapter& stlrange, bool hasEnded);
 
+		stlrange_iterator(const stlrange_iterator& other) = default;
+		stlrange_iterator(stlrange_iterator&& other) = default;
+		stlrange_iterator& operator=(const stlrange_iterator& other) = default;
+		stlrange_iterator& operator=(stlrange_iterator&& other) = default;
+
 		const value_type& operator*() const;
 		stlrange_iterator& operator++();
 		bool operator==(const stlrange_iterator& other);
@@ -22,6 +27,11 @@ public:
 	};
 
 	stlrange_adapter(const TSourceEnumerator& source);
+
+	stlrange_adapter(const stlrange_adapter& other) = default;
+	stlrange_adapter(stlrange_adapter&& other) = default;
+	stlrange_adapter& operator=(const stlrange_adapter& other) = default;
+	stlrange_adapter& operator=(stlrange_adapter&& other) = default;
 
 	stlrange_iterator begin();
 	stlrange_iterator end();

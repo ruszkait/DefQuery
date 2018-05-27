@@ -6,6 +6,11 @@ class select_enumerator : public enumerator<typename TProjectedValue, select_enu
 public:
 	select_enumerator(const TSourceEnumerator& source, const TProjection& projection);
 
+	select_enumerator(const select_enumerator& other) = default;
+	select_enumerator(select_enumerator&& other) = default;
+	select_enumerator& operator=(const select_enumerator& other) = default;
+	select_enumerator& operator=(select_enumerator&& other) = default;
+
 	bool operator++();
 	const value_type& operator*() const;
 

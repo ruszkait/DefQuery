@@ -8,6 +8,11 @@ public:
 
 	selectmany_enumerator(const TSourceEnumerator& source, const TEnumeratorProjection& projection);
 
+	selectmany_enumerator(const selectmany_enumerator& other) = default;
+	selectmany_enumerator(selectmany_enumerator&& other) = default;
+	selectmany_enumerator& operator=(const selectmany_enumerator& other) = default;
+	selectmany_enumerator& operator=(selectmany_enumerator&& other) = default;
+
 	bool operator++();
 	const value_type& operator*() const;
 

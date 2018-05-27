@@ -4,6 +4,13 @@ template<typename TValue, typename TDerived>
 class generator_enumerator : public enumerator<TValue, TDerived>
 {
 public:
+	generator_enumerator() = default;
+
+	generator_enumerator(const generator_enumerator& other) = default;
+	generator_enumerator(generator_enumerator&& other) = default;
+	generator_enumerator& operator=(const generator_enumerator& other) = default;
+	generator_enumerator& operator=(generator_enumerator&& other) = default;
+
 	bool operator++();
 	const value_type& operator*() const;
 
