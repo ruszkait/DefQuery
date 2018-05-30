@@ -24,7 +24,8 @@ TEST(StlRangeTest, AlgorithmTest)
 	std::list<int> copiedValues;
 	std::array<int, 10> arr = { 1,2,3,4,5,6 };
 
-	auto enumerator = DefQuery::from(&arr[0], &arr[4]).stlrange();
+	auto enumerator = DefQuery::from(&arr[0], &arr[4])
+							.stlrange();
 
 	std::copy(enumerator.begin(), enumerator.end(), std::back_inserter(copiedValues));
 

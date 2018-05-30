@@ -64,6 +64,10 @@ namespace DefQuery
 		// Creates an STL range from the enumerator
 		stlrange_adapter<derived_type> stlrange();
 
+		// Accumulates the values of the underlying enumerator to an accumlator
+		template <typename TAccumlatorInitializer, typename TFolding, typename TAccumlator = std::result_of<TAccumlatorInitializer(const typename derived_type::value_type&)>::type>
+		TAccumlator aggregate(TFolding folder, TAccumlatorInitializer accumlatorInitializer);
+
 	protected:
 		enumerator_interface<value_type>* clone() const override;
 	};
