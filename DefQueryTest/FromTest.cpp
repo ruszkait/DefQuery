@@ -23,7 +23,7 @@ TEST(FromTest, FromPointerTest)
 
 TEST(FromTest, FromIteratorTest)
 {
-	std::list<int> list = { 1,2,3 };
+    std::list<int> list = { 1,2,3 };
 
 	auto enumerator = DefQuery::from(list.begin(), list.end());
 
