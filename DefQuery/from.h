@@ -1,3 +1,5 @@
+#pragma once 
+
 #include "enumerator.h"
 
 namespace DefQuery
@@ -15,14 +17,14 @@ namespace DefQuery
 		from_enumerator& operator=(from_enumerator&& other) = default;
 
 		bool operator++();
-		const value_type& operator*() const;
+		const TValue& operator*() const;
 
 	private:
 		bool move_next() override { return this->operator++(); }
-		const value_type& current() const { return this->operator*(); }
+		const TValue& current() const override { return this->operator*(); }
 
-		typename TIterator _current;
-		typename TIterator _end;
+		TIterator _current;
+		TIterator _end;
 		bool _firstMoveNext;
 	};
 
@@ -77,7 +79,7 @@ namespace DefQuery
 	}
 
 	template<typename TIterator, typename TValue>
-	const typename from_enumerator<TIterator, TValue>::value_type& from_enumerator<TIterator, TValue>::operator*() const
+	const TValue& from_enumerator<TIterator, TValue>::operator*() const
 	{
 		return *_current;
 	}

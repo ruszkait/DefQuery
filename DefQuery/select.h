@@ -1,9 +1,11 @@
+#pragma once 
+
 #include "enumerator.h"
 
 namespace DefQuery
 {
 	template <typename TSourceEnumerator, typename TProjection, typename TProjectedValue>
-	class select_enumerator : public enumerator<typename TProjectedValue, select_enumerator<TSourceEnumerator, TProjection, TProjectedValue>>
+	class select_enumerator : public enumerator<TProjectedValue, select_enumerator<TSourceEnumerator, TProjection, TProjectedValue>>
 	{
 	public:
 		select_enumerator(const TSourceEnumerator& source, const TProjection& projection);
@@ -14,11 +16,11 @@ namespace DefQuery
 		select_enumerator& operator=(select_enumerator&& other) = default;
 
 		bool operator++();
-		const value_type& operator*() const;
+		const TProjectedValue& operator*() const;
 
 	private:
 		bool move_next() override { return this->operator++(); }
-		const value_type& current() const { return this->operator*(); }
+		const TProjectedValue& current() const override { return this->operator*(); }
 
 		TSourceEnumerator _source;
 		TProjection _projector;
@@ -51,7 +53,7 @@ namespace DefQuery
 	}
 
 	template <typename TSourceEnumerator, typename TProjection, typename TProjectedValue>
-	const typename select_enumerator<TSourceEnumerator, TProjection, TProjectedValue>::value_type& select_enumerator<TSourceEnumerator, TProjection, TProjectedValue>::operator*() const
+	const TProjectedValue& select_enumerator<TSourceEnumerator, TProjection, TProjectedValue>::operator*() const
 	{
 		return _currentProjectedValue;
 	}

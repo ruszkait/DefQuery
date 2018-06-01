@@ -1,3 +1,5 @@
+#pragma once 
+
 #include "../DefQuery/enumerator.h"
 #include <functional>
 
@@ -15,11 +17,11 @@ namespace DefQuery
 		generator_enumerator& operator=(generator_enumerator&& other) = default;
 
 		bool operator++();
-		const value_type& operator*() const;
+		const TValue& operator*() const;
 
 	protected:
 		bool move_next() override { return this->operator++(); }
-		const value_type& current() const { return this->operator*(); }
+		const TValue& current() const override { return this->operator*(); }
 
 	private:
 		std::function<bool(TValue&)> _yieldCalculator;
@@ -47,7 +49,7 @@ namespace DefQuery
 	}
 
 	template<typename TValue>
-	const typename generator_enumerator<TValue>::value_type& generator_enumerator<TValue>::operator*() const
+	const TValue& generator_enumerator<TValue>::operator*() const
 	{
 		return _current;
 	}

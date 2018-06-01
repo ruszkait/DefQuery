@@ -1,3 +1,5 @@
+#pragma once 
+
 #include "enumerator.h"
 
 namespace DefQuery
@@ -14,11 +16,11 @@ namespace DefQuery
 		where_enumerator& operator=(where_enumerator&& other) = default;
 
 		bool operator++();
-		const value_type& operator*() const;
+		const typename TSourceEnumerator::value_type& operator*() const;
 
 	private:
 		bool move_next() override { return this->operator++(); }
-		const value_type& current() const { return this->operator*(); }
+		const typename TSourceEnumerator::value_type& current() const override { return this->operator*(); }
 
 		TSourceEnumerator _source;
 		TFilter _filter;
@@ -54,7 +56,7 @@ namespace DefQuery
 	}
 
 	template<typename TSourceEnumerator, typename TFilter>
-	const typename where_enumerator<TSourceEnumerator, TFilter>::value_type& where_enumerator<TSourceEnumerator, TFilter>::operator*() const
+	const typename TSourceEnumerator::value_type& where_enumerator<TSourceEnumerator, TFilter>::operator*() const
 	{
 		return *_source;
 	}

@@ -1,5 +1,6 @@
-#include "enumerator.h"
+#pragma once 
 
+#include "enumerator.h"
 #include <memory>
 
 namespace DefQuery
@@ -16,13 +17,13 @@ namespace DefQuery
 		shared_enumerator& operator=(shared_enumerator&& other) = default;
 
 		bool operator++();
-		const value_type& operator*() const;
+		const TValue& operator*() const;
 
 	private:
 		bool move_next() override { return this->operator++(); }
-		const value_type& current() const { return this->operator*(); }
+		const TValue& current() const override { return this->operator*(); }
 
-		std::shared_ptr<enumerator_interface<value_type>> _source;
+		std::shared_ptr<enumerator_interface<TValue>> _source;
 	};
 
 	// ==============================================================================================
@@ -47,7 +48,7 @@ namespace DefQuery
 	}
 
 	template<typename TValue>
-	const typename shared_enumerator<TValue>::value_type& shared_enumerator<TValue>::operator*() const
+	const TValue& shared_enumerator<TValue>::operator*() const
 	{
 		return _source->current();
 	}

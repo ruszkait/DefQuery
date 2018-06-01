@@ -1,3 +1,5 @@
+#pragma once 
+
 #include "enumerator.h"
 
 namespace DefQuery
@@ -7,15 +9,15 @@ namespace DefQuery
 	template <typename TValue, typename TDerived>
 	template <typename TAccumlatorInitializer, typename TFolding, typename TAccumlator>
 	TAccumlator enumerator<TValue, TDerived>::aggregate(TFolding folder, TAccumlatorInitializer accumlatorInitializer)
-	{
-		if (!move_next())
+    {
+        if (!this->move_next())
 			return TAccumlator();
 
-		TAccumlator accumlator = accumlatorInitializer(current());
+        TAccumlator accumlator = accumlatorInitializer(this->current());
 
-		while (move_next())
+		while (this->move_next())
 		{
-			folder(accumlator, current());
+			folder(accumlator, this->current());
 		}
 		return accumlator;
 	}

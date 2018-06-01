@@ -24,52 +24,50 @@ namespace DefQuery
 	class enumerator_interface
 	{
 	public:
-		using value_type = TValue;
-
 		virtual ~enumerator_interface() = default;
 
 		// Produces the next element, returns false if the enumeration has exhausted
 		virtual bool move_next() = 0;
 
 		// Provides the last produced element
-		virtual const value_type& current() const = 0;
+		virtual const TValue& current() const = 0;
 
 	protected:
-		virtual enumerator_interface<value_type>* clone() const = 0;
+		virtual enumerator_interface<TValue>* clone() const = 0;
 	};
 
 	template <typename TValue, typename TDerived>
 	class enumerator : public enumerator_interface<TValue>
 	{
 	public:
-		using derived_type = TDerived;
-
+        using value_type = TValue;
+        
 		// Keeps the data that passes the filter predicate in the stream
 		template <typename TFilter>
-		where_enumerator<derived_type, TFilter> where(const TFilter& filter);
+		where_enumerator<TDerived, TFilter> where(const TFilter& filter);
 
 		// Transforms the source value to another type
-		template <typename TProjection, typename TProjectedValue = std::result_of<TProjection(const value_type&)>::type>
-		select_enumerator<derived_type, TProjection, TProjectedValue> select(const TProjection& projector);
+		template <typename TProjection, typename TProjectedValue = typename std::result_of<TProjection(const TValue&)>::type>
+		select_enumerator<TDerived, TProjection, TProjectedValue> select(const TProjection& projector);
 
 		// Flattens out a hierarchical container structure
-		template <typename TEnumeratorProjection, typename TProjectedEnumeratorValue = std::result_of<TEnumeratorProjection(const typename derived_type::value_type&)>::type::value_type >
-		selectmany_enumerator<derived_type, TEnumeratorProjection, TProjectedEnumeratorValue> selectmany(const TEnumeratorProjection& projector);
+		template <typename TEnumeratorProjection, typename TProjectedEnumerator = typename std::result_of<TEnumeratorProjection(const TValue&)>::type >
+		selectmany_enumerator<TDerived, TEnumeratorProjection, TProjectedEnumerator> selectmany(const TEnumeratorProjection& projector);
 
 		// Erases the underlying decorator chain type and provides an stream value oriented interface.
 		// Creates a shared pointer wrapper. This wrapper can be passed around by value cheap.
 		// Then the shared enumerator can be further decorated by other enumerators.
-		shared_enumerator<value_type> share();
+        shared_enumerator<TValue> share();
 
 		// Creates an STL range from the enumerator
-		stlrange_adapter<derived_type> stlrange();
+		stlrange_adapter<TDerived> stlrange();
 
 		// Accumulates the values of the underlying enumerator to an accumlator
-		template <typename TAccumlatorInitializer, typename TFolding, typename TAccumlator = std::result_of<TAccumlatorInitializer(const typename derived_type::value_type&)>::type>
+		template <typename TAccumlatorInitializer, typename TFolding, typename TAccumlator = typename std::result_of<TAccumlatorInitializer(const TValue&)>::type>
 		TAccumlator aggregate(TFolding folder, TAccumlatorInitializer accumlatorInitializer);
 
 	protected:
-		enumerator_interface<value_type>* clone() const override;
+		enumerator_interface<TValue>* clone() const override;
 	};
 
 	template <typename TValue, typename TDerived>

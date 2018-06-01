@@ -1,3 +1,5 @@
+#pragma once 
+
 #include "enumerator.h"
 #include <iterator>
 
@@ -7,8 +9,7 @@ namespace DefQuery
 	class stlrange_adapter
 	{
 	public:
-		using value_type = typename TSourceEnumerator::value_type;
-		class stlrange_iterator : public std::iterator<std::forward_iterator_tag, value_type>
+		class stlrange_iterator : public std::iterator<std::forward_iterator_tag, typename TSourceEnumerator::value_type>
 		{
 		public:
 			stlrange_iterator(stlrange_adapter& stlrange, bool hasEnded);
@@ -18,7 +19,7 @@ namespace DefQuery
 			stlrange_iterator& operator=(const stlrange_iterator& other) = default;
 			stlrange_iterator& operator=(stlrange_iterator&& other) = default;
 
-			const value_type& operator*() const;
+			const typename TSourceEnumerator::value_type& operator*() const;
 			stlrange_iterator& operator++();
 			bool operator==(const stlrange_iterator& other);
 			bool operator!=(const stlrange_iterator& other);
@@ -78,7 +79,7 @@ namespace DefQuery
 	}
 
 	template<typename TSourceEnumerator>
-	const typename stlrange_adapter<TSourceEnumerator>::stlrange_iterator::value_type& stlrange_adapter<TSourceEnumerator>::stlrange_iterator::operator*() const
+	const typename TSourceEnumerator::value_type& stlrange_adapter<TSourceEnumerator>::stlrange_iterator::operator*() const
 	{
 		return *(_stlrangeAdapter._source);
 	}

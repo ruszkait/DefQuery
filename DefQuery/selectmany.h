@@ -1,13 +1,13 @@
+#pragma once 
+
 #include "enumerator.h"
 
 namespace DefQuery
 {
-	template <typename TSourceEnumerator, typename TEnumeratorProjection, typename TProjectedEnumeratorValue>
-	class selectmany_enumerator : public enumerator<typename TProjectedEnumeratorValue, selectmany_enumerator<TSourceEnumerator, TEnumeratorProjection, TProjectedEnumeratorValue>>
+	template <typename TSourceEnumerator, typename TEnumeratorProjection, typename TProjectedEnumerator>
+    class selectmany_enumerator : public enumerator<typename TProjectedEnumerator::value_type, selectmany_enumerator<TSourceEnumerator, TEnumeratorProjection, TProjectedEnumerator>>
 	{
 	public:
-		using projected_enumerator_type = typename std::result_of<TEnumeratorProjection(const typename TSourceEnumerator::value_type&)>::type;
-
 		selectmany_enumerator(const TSourceEnumerator& source, const TEnumeratorProjection& projection);
 
 		selectmany_enumerator(const selectmany_enumerator& other) = default;
@@ -16,36 +16,36 @@ namespace DefQuery
 		selectmany_enumerator& operator=(selectmany_enumerator&& other) = default;
 
 		bool operator++();
-		const value_type& operator*() const;
+		const typename TProjectedEnumerator::value_type& operator*() const;
 
 	private:
 		bool move_next() override { return this->operator++(); }
-		const value_type& current() const { return this->operator*(); }
+		const typename TProjectedEnumerator::value_type& current() const override { return this->operator*(); }
 
 		TSourceEnumerator _source;
 		TEnumeratorProjection _projector;
-		projected_enumerator_type _currentProjectedEnumerator;
-		value_type _currentProjectedValue;
+		TProjectedEnumerator _currentProjectedEnumerator;
+        typename TProjectedEnumerator::value_type _currentProjectedValue;
 	};
 
 	// ==============================================================================================
 
 	template <typename TValue, typename TDerived>
-	template <typename TEnumeratorProjection, typename TProjectedEnumeratorValue>
-	selectmany_enumerator<TDerived, TEnumeratorProjection, TProjectedEnumeratorValue> enumerator<TValue, TDerived>::selectmany(const TEnumeratorProjection& projector)
+	template <typename TEnumeratorProjection, typename TProjectedEnumerator>
+	selectmany_enumerator<TDerived, TEnumeratorProjection, TProjectedEnumerator> enumerator<TValue, TDerived>::selectmany(const TEnumeratorProjection& projector)
 	{
-		return selectmany_enumerator<TDerived, TEnumeratorProjection, TProjectedEnumeratorValue>(static_cast<TDerived&>(*this), projector);
+		return selectmany_enumerator<TDerived, TEnumeratorProjection, TProjectedEnumerator>(static_cast<TDerived&>(*this), projector);
 	}
 
-	template <typename TSourceEnumerator, typename TEnumeratorProjection, typename TProjectedEnumeratorValue>
-	selectmany_enumerator<TSourceEnumerator, TEnumeratorProjection, TProjectedEnumeratorValue>::selectmany_enumerator(const TSourceEnumerator& source, const TEnumeratorProjection& projector)
+	template <typename TSourceEnumerator, typename TEnumeratorProjection, typename TProjectedEnumerator>
+	selectmany_enumerator<TSourceEnumerator, TEnumeratorProjection, TProjectedEnumerator>::selectmany_enumerator(const TSourceEnumerator& source, const TEnumeratorProjection& projector)
 		: _source(source)
 		, _projector(projector)
 	{
 	}
 
-	template <typename TSourceEnumerator, typename TEnumeratorProjection, typename TProjectedEnumeratorValue>
-	bool selectmany_enumerator<TSourceEnumerator, TEnumeratorProjection, TProjectedEnumeratorValue>::operator++()
+	template <typename TSourceEnumerator, typename TEnumeratorProjection, typename TProjectedEnumerator>
+	bool selectmany_enumerator<TSourceEnumerator, TEnumeratorProjection, TProjectedEnumerator>::operator++()
 	{
 		auto currentProjectedEnumeratorExhausted = !++_currentProjectedEnumerator;
 		while (currentProjectedEnumeratorExhausted)
@@ -62,8 +62,8 @@ namespace DefQuery
 		return true;
 	}
 
-	template <typename TSourceEnumerator, typename TEnumeratorProjection, typename TProjectedEnumeratorValue>
-	const typename selectmany_enumerator<TSourceEnumerator, TEnumeratorProjection, TProjectedEnumeratorValue>::value_type& selectmany_enumerator<TSourceEnumerator, TEnumeratorProjection, TProjectedEnumeratorValue>::operator*() const
+	template <typename TSourceEnumerator, typename TEnumeratorProjection, typename TProjectedEnumerator>
+    const typename TProjectedEnumerator::value_type& selectmany_enumerator<TSourceEnumerator, TEnumeratorProjection, TProjectedEnumerator>::operator*() const
 	{
 		return _currentProjectedValue;
 	}
