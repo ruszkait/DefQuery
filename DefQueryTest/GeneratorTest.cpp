@@ -1,5 +1,4 @@
-#include "pch.h"
-
+#include "gtest/gtest.h"
 #include "../DefQuery/generator.h"
 #include "../DefQuery/where.h"
 

@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "gtest/gtest.h"
 #include <array>
 #include "../DefQuery/from.h"
 #include "../DefQuery/where.h"
