@@ -1,6 +1,7 @@
 #pragma once
 
 #include <type_traits>
+#include <memory>
 
 namespace DefQuery
 {
@@ -37,7 +38,7 @@ namespace DefQuery
         virtual const TValue& current() const = 0;
 
 	protected:
-		virtual enumerator_interface<TValue>* clone() const = 0;
+		virtual std::shared_ptr<enumerator_interface<TValue>> clone() const = 0;
 	};
 
 	template <typename TValue, typename TDerived>
@@ -78,12 +79,13 @@ namespace DefQuery
         bool contains(TFilter filter);
 
 	protected:
-		enumerator_interface<TValue>* clone() const override;
+		std::shared_ptr<enumerator_interface<TValue>> clone() const override;
 	};
 
 	template <typename TValue, typename TDerived>
-	enumerator_interface<TValue>* enumerator<TValue, TDerived>::clone() const
+	std::shared_ptr<enumerator_interface<TValue>> enumerator<TValue, TDerived>::clone() const
 	{
-		return new TDerived(static_cast<const TDerived&>(*this));
+		// Use make_shared to minimize the number of heap allocations
+		return std::make_shared<TDerived>(static_cast<const TDerived&>(*this));
 	}
 }

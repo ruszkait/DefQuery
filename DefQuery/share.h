@@ -9,7 +9,7 @@ namespace DefQuery
 	class shared_enumerator : public enumerator<TValue, shared_enumerator<TValue>>
 	{
 	public:
-		shared_enumerator(enumerator_interface<TValue>* source);
+		shared_enumerator(const std::shared_ptr<enumerator_interface<TValue>>& source);
 
 		shared_enumerator(const shared_enumerator& other) = default;
 		shared_enumerator(shared_enumerator&& other) = default;
@@ -36,7 +36,7 @@ namespace DefQuery
 	}
 
 	template<typename TValue>
-	shared_enumerator<TValue>::shared_enumerator(enumerator_interface<TValue>* source)
+	shared_enumerator<TValue>::shared_enumerator(const std::shared_ptr<enumerator_interface<TValue>>& source)
 		: _source(source)
 	{
 	}
