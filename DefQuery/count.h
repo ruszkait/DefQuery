@@ -13,7 +13,7 @@ namespace DefQuery
 
         // Use the derived type directly to avoid using virtual functions
         // to progress with source enumerator consumption
-        auto& self = dynamic_cast<TDerived&>(*this);
+        auto& self = static_cast<TDerived&>(*this);
         while(self.operator++())
 			++counter;
 
