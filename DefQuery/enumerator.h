@@ -27,10 +27,14 @@ namespace DefQuery
 		virtual ~enumerator_interface() = default;
 
 		// Produces the next element, returns false if the enumeration has exhausted
+        // Prefer the usage of the enumerator operator++() over this function,
+        // this saves the cost of calling a virtual function
 		virtual bool move_next() = 0;
 
 		// Provides the last produced element
-		virtual const TValue& current() const = 0;
+        // Prefer the usage of the enumerator operator*() over this function,
+        // this saves the cost of calling a virtual function
+        virtual const TValue& current() const = 0;
 
 	protected:
 		virtual enumerator_interface<TValue>* clone() const = 0;

@@ -11,7 +11,10 @@ namespace DefQuery
 	{
 		std::size_t counter = 0;
 
-		while(this->move_next())
+        // Use the derived type directly to avoid using virtual functions
+        // to progress with source enumerator consumption
+        auto& self = dynamic_cast<TDerived&>(*this);
+        while(self.operator++())
 			++counter;
 
 		return counter;

@@ -10,9 +10,12 @@ namespace DefQuery
     template <typename TFilter>
     bool enumerator<TValue, TDerived>::contains(TFilter filter)
     {
-        while(this->move_next())
+        // Use the derived type directly to avoid using virtual functions
+        // to progress with source enumerator consumption
+        auto& self = dynamic_cast<TDerived&>(*this);
+        while(self.operator++())
         {
-            if (filter(this->current()))
+            if (filter(self.operator*()))
                 return true;
         }
 

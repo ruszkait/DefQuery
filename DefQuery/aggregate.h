@@ -10,14 +10,18 @@ namespace DefQuery
 	template <typename TAccumlatorInitializer, typename TFolding, typename TAccumlator>
 	TAccumlator enumerator<TValue, TDerived>::aggregate(TFolding folder, TAccumlatorInitializer accumlatorInitializer)
     {
-        if (!this->move_next())
+        // Use the derived type directly to avoid using virtual functions
+        // to progress with source enumerator consumption
+        auto& self = dynamic_cast<TDerived&>(*this);
+
+        if (!self.operator++())
 			return TAccumlator();
 
-        TAccumlator accumlator = accumlatorInitializer(this->current());
+        TAccumlator accumlator = accumlatorInitializer(self.operator*());
 
-		while (this->move_next())
+        while (self.operator++())
 		{
-			folder(accumlator, this->current());
+            folder(accumlator, self.operator*());
 		}
 		return accumlator;
 	}
