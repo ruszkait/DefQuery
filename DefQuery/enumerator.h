@@ -66,6 +66,9 @@ namespace DefQuery
 		template <typename TAccumlatorInitializer, typename TFolding, typename TAccumlator = typename std::result_of<TAccumlatorInitializer(const TValue&)>::type>
 		TAccumlator aggregate(TFolding folder, TAccumlatorInitializer accumlatorInitializer);
 
+		// Returns the number of elements
+		std::size_t count();
+
 	protected:
 		enumerator_interface<TValue>* clone() const override;
 	};
