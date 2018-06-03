@@ -12,10 +12,9 @@ message(STATUS "Source files " ${Sources})
 add_library(${ProjectName} INTERFACE)
 
 #target_sources(${ProjectName} INTERFACE ${Sources})
-target_include_directories(${ProjectName} INTERFACE ${Sources})
 message(STATUS "Source files " ${INTERFACE_SOURCES})
 
-target_include_directories(${ProjectName} INTERFACE .)
+target_include_directories(${ProjectName} INTERFACE ${ProjectAbsoluteDir})
 
 
 message(STATUS "End Project " ${ProjectName})
