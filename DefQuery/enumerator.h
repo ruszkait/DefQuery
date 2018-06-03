@@ -58,7 +58,7 @@ namespace DefQuery
 		template <typename TEnumeratorProjection, typename TProjectedEnumerator = typename std::result_of<TEnumeratorProjection(const TValue&)>::type >
 		selectmany_enumerator<TDerived, TEnumeratorProjection, TProjectedEnumerator> selectmany(const TEnumeratorProjection& projector);
 
-		// Erases the underlying decorator chain type and provides an stream value oriented interface.
+        // Erases the underlying decorator chain type.
 		// Creates a shared pointer wrapper. This wrapper can be passed around by value cheap.
 		// Then the shared enumerator can be further decorated by other enumerators.
         shared_enumerator<TValue> share();
