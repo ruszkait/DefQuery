@@ -69,6 +69,10 @@ namespace DefQuery
 		// Returns the number of elements
 		std::size_t count();
 
+        // Returns the number of elements
+        template <typename TFilter>
+        bool contains(TFilter filter);
+
 	protected:
 		enumerator_interface<TValue>* clone() const override;
 	};
