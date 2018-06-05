@@ -8,7 +8,8 @@ namespace DefQuery
 	class where_enumerator : public enumerator<typename TSourceEnumerator::value_type, where_enumerator<TSourceEnumerator, TFilter>>
 	{
 	public:
-		where_enumerator(const TSourceEnumerator& source, const TFilter& filter);
+        template <typename TSourceEnumeratorConstr>
+		where_enumerator(TSourceEnumeratorConstr&& source, const TFilter& filter);
 
 		where_enumerator(const where_enumerator& other) = default;
 		where_enumerator(where_enumerator&& other) = default;
@@ -32,15 +33,15 @@ namespace DefQuery
 	template <typename TFilter>
 	where_enumerator<TDerived, TFilter> enumerator<TValue, TDerived>::where(const TFilter& filter)
 	{
-		return where_enumerator<TDerived, TFilter>(static_cast<TDerived&>(*this), filter);
+        return where_enumerator<TDerived, TFilter>(std::move(static_cast<TDerived&>(*this)), filter);
 	}
 
 	template<typename TSourceEnumerator, typename TFilter>
-	where_enumerator<TSourceEnumerator, TFilter>::where_enumerator(const TSourceEnumerator& source, const TFilter& filter)
-		: _source(source)
+    template <typename TSourceEnumeratorConstr>
+	where_enumerator<TSourceEnumerator, TFilter>::where_enumerator(TSourceEnumeratorConstr&& source, const TFilter& filter)
+        : _source(std::forward<TSourceEnumeratorConstr>(source))
 		, _filter(filter)
-	{
-	}
+	{}
 
 	template<typename TSourceEnumerator, typename TFilter>
 	bool where_enumerator<TSourceEnumerator, TFilter>::operator++()

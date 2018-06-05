@@ -8,7 +8,8 @@ namespace DefQuery
     class selectmany_enumerator : public enumerator<typename TProjectedEnumerator::value_type, selectmany_enumerator<TSourceEnumerator, TEnumeratorProjection, TProjectedEnumerator>>
 	{
 	public:
-		selectmany_enumerator(const TSourceEnumerator& source, const TEnumeratorProjection& projection);
+        template <typename TSourceEnumeratorConstr>
+		selectmany_enumerator(TSourceEnumeratorConstr&& source, const TEnumeratorProjection& projection);
 
 		selectmany_enumerator(const selectmany_enumerator& other) = default;
 		selectmany_enumerator(selectmany_enumerator&& other) = default;
@@ -34,12 +35,13 @@ namespace DefQuery
 	template <typename TEnumeratorProjection, typename TProjectedEnumerator>
 	selectmany_enumerator<TDerived, TEnumeratorProjection, TProjectedEnumerator> enumerator<TValue, TDerived>::selectmany(const TEnumeratorProjection& projector)
 	{
-		return selectmany_enumerator<TDerived, TEnumeratorProjection, TProjectedEnumerator>(static_cast<TDerived&>(*this), projector);
+        return selectmany_enumerator<TDerived, TEnumeratorProjection, TProjectedEnumerator>(std::move(static_cast<TDerived&>(*this)), projector);
 	}
 
 	template <typename TSourceEnumerator, typename TEnumeratorProjection, typename TProjectedEnumerator>
-	selectmany_enumerator<TSourceEnumerator, TEnumeratorProjection, TProjectedEnumerator>::selectmany_enumerator(const TSourceEnumerator& source, const TEnumeratorProjection& projector)
-		: _source(source)
+    template <typename TSourceEnumeratorConstr>
+	selectmany_enumerator<TSourceEnumerator, TEnumeratorProjection, TProjectedEnumerator>::selectmany_enumerator(TSourceEnumeratorConstr&& source, const TEnumeratorProjection& projector)
+        : _source(std::forward<TSourceEnumeratorConstr>(source))
 		, _projector(projector)
 	{
 	}

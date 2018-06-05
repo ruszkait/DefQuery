@@ -21,3 +21,14 @@ TEST(WhereTest, FilterTest)
 	ASSERT_FALSE(++enumerator);
 	ASSERT_FALSE(++enumerator);
 }
+
+TEST(WhereTest, EmptyTest)
+{
+    std::list<int> list;
+    
+    auto enumerator = DefQuery::from(list)
+        .where([](const int a) { return a < 4 || a > 5; });
+    
+    ASSERT_FALSE(++enumerator);
+    ASSERT_FALSE(++enumerator);
+}

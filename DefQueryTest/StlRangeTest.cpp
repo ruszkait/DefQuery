@@ -5,6 +5,16 @@
 #include "../DefQuery/from.h"
 #include "../DefQuery/stlrange.h"
 
+TEST(StlRangeTest, EmptyTest)
+{
+    std::list<int> emptyList;
+    
+    auto enumerator = DefQuery::from(emptyList);
+    
+    for (auto a : enumerator.stlrange())
+        ASSERT_TRUE(false);
+}
+
 TEST(StlRangeTest, ForTest)
 {
 	std::list<int> copiedValues;
@@ -32,3 +42,4 @@ TEST(StlRangeTest, AlgorithmTest)
 	std::list<int> expectedValues{ 1,2,3,4 };
 	ASSERT_EQ(expectedValues, copiedValues);
 }
+

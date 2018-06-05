@@ -26,3 +26,36 @@ TEST(AggregateTest, JoinStringsTest)
 
 	ASSERT_EQ("1,2,3", joinedList);
 }
+
+TEST(AggregateTest, JoinStringsToStreamTest)
+{
+    std::list<int> lis = { 1,2,3 };
+    
+    auto joinedList = DefQuery::from(lis)
+    .aggregate([](std::stringstream& accumlator, int a) { accumlator << ',' << a; },
+		[](int a) { std::stringstream accumlator; accumlator << a; return std::move(accumlator); });
+    
+    ASSERT_EQ("1,2,3", joinedList.str());
+}
+
+TEST(AggregateTest, AggregateOneTest)
+{
+    std::list<int> lis = { 1 };
+    
+    auto joinedList = DefQuery::from(lis)
+    .aggregate([](std::string& accumlator, int a) { accumlator += ',' + std::to_string(a); },
+               [](int a) { return std::to_string(a); });
+    
+    ASSERT_EQ("1", joinedList);
+}
+
+TEST(AggregateTest, AggregateNoneTest)
+{
+    std::list<int> lis;
+    
+    auto joinedList = DefQuery::from(lis)
+    .aggregate([](std::string& accumlator, int a) { accumlator += ',' + std::to_string(a); },
+               [](int a) { return std::to_string(a); });
+    
+    ASSERT_EQ("", joinedList);
+}

@@ -41,6 +41,9 @@ TEST(FromTest, FromContainerTest)
 {
 	std::list<int> list = { 1,2,3 };
 
+    // Warning: the from_enumerator does not own or make a copy of the collection, so make sure
+    // not to pass a temporal variable as the parameter, because it gets destroyed immediately
+    // after the from enumerator is created.
 	auto enumerator = DefQuery::from(list);
 
 	ASSERT_TRUE(++enumerator);

@@ -29,7 +29,8 @@ namespace DefQuery
 			bool _hasEnded;
 		};
 
-		stlrange_adapter(const TSourceEnumerator& source);
+        template <typename TSourceEnumeratorConstr>
+		stlrange_adapter(TSourceEnumeratorConstr&& source);
 
 		stlrange_adapter(const stlrange_adapter& other) = default;
 		stlrange_adapter(stlrange_adapter&& other) = default;
@@ -48,12 +49,13 @@ namespace DefQuery
 	template <typename TValue, typename TDerived>
 	stlrange_adapter<TDerived> enumerator<TValue, TDerived>::stlrange()
 	{
-		return stlrange_adapter<TDerived>(static_cast<TDerived&>(*this));
+        return stlrange_adapter<TDerived>(std::move(static_cast<TDerived&>(*this)));
 	}
 
 	template<typename TSourceEnumerator>
-	stlrange_adapter<TSourceEnumerator>::stlrange_adapter(const TSourceEnumerator& source)
-		: _source(source)
+    template <typename TSourceEnumeratorConstr>
+	stlrange_adapter<TSourceEnumerator>::stlrange_adapter(TSourceEnumeratorConstr&& source)
+        : _source(std::forward<TSourceEnumeratorConstr>(source))
 	{
 	}
 

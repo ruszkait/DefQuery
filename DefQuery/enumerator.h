@@ -2,6 +2,10 @@
 
 #include <type_traits>
 #include <memory>
+#include <list>
+#include <vector>
+#include <functional>
+
 
 namespace DefQuery
 {
@@ -20,6 +24,13 @@ namespace DefQuery
 	template <typename TValue>
 	class shared_enumerator;
 
+    template <typename TSourceEnumerator>
+    class orderby_enumerator;
+    enum class sorting_order
+    {
+        ascending,
+        descending
+    };
 
 	template <typename TValue>
 	class enumerator_interface
@@ -74,9 +85,20 @@ namespace DefQuery
 		// Returns the number of elements
 		std::size_t count();
 
-        // Returns the number of elements
+        // Returns if any element fulfills the search criteria
         template <typename TFilter>
         bool contains(TFilter filter);
+
+        bool contains(const TValue& searched);
+
+        // Creates a list out of the query results
+        std::list<TValue> list();
+
+        // Creates a vector out of the query results
+        std::vector<TValue> vector();
+
+        // Sorting with a certain window size
+        orderby_enumerator<TDerived> orderby(const std::function<int(const TValue&, const TValue&)>& comparator, sorting_order order = sorting_order::ascending);
 
 	protected:
 		std::shared_ptr<enumerator_interface<TValue>> clone() const override;
