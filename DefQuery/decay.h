@@ -6,19 +6,19 @@
 namespace DefQuery
 {
 	template <typename TValue>
-	class shared_enumerator : public enumerator<TValue, shared_enumerator<TValue>>
+	class decayed_enumerator : public enumerator<TValue, decayed_enumerator<TValue>>
 	{
 	public:
-        using TBaseClass = enumerator<TValue, shared_enumerator<TValue>>;
+        using TBaseClass = enumerator<TValue, decayed_enumerator<TValue>>;
         
-        shared_enumerator();
+		decayed_enumerator();
         
-		shared_enumerator(const std::shared_ptr<enumerator_interface<TValue>>& source);
+		decayed_enumerator(const std::shared_ptr<enumerator_interface<TValue>>& source);
 
-		shared_enumerator(const shared_enumerator& other) = default;
-		shared_enumerator(shared_enumerator&& other) = default;
-		shared_enumerator& operator=(const shared_enumerator& other) = default;
-		shared_enumerator& operator=(shared_enumerator&& other) = default;
+		decayed_enumerator(const decayed_enumerator& other) = default;
+		decayed_enumerator(decayed_enumerator&& other) = default;
+		decayed_enumerator& operator=(const decayed_enumerator& other) = default;
+		decayed_enumerator& operator=(decayed_enumerator&& other) = default;
 
 		bool operator++();
 		const TValue& operator*() const;
@@ -34,32 +34,32 @@ namespace DefQuery
 	// ==============================================================================================
 
 	template <typename TValue, typename TDerived>
-	shared_enumerator<TValue> enumerator<TValue, TDerived>::share() &&
+	decayed_enumerator<TValue> enumerator<TValue, TDerived>::decay() &&
 	{
         auto instanceOnTheHeap = std::make_shared<TDerived>(std::move(static_cast<const TDerived&>(*this)));
-        return shared_enumerator<TValue>(instanceOnTheHeap);
+        return decayed_enumerator<TValue>(instanceOnTheHeap);
 	}
 
     template <typename TValue, typename TDerived>
-    shared_enumerator<TValue> enumerator<TValue, TDerived>::share() &
+	decayed_enumerator<TValue> enumerator<TValue, TDerived>::decay() &
     {
         auto instanceOnTheHeap = std::make_shared<TDerived>(static_cast<const TDerived&>(*this));
-        return shared_enumerator<TValue>(instanceOnTheHeap);
+        return decayed_enumerator<TValue>(instanceOnTheHeap);
     }
 
     template<typename TValue>
-    shared_enumerator<TValue>::shared_enumerator()
+	decayed_enumerator<TValue>::decayed_enumerator()
         : TBaseClass(true)
     {}
     
 	template<typename TValue>
-	shared_enumerator<TValue>::shared_enumerator(const std::shared_ptr<enumerator_interface<TValue>>& source)
+	decayed_enumerator<TValue>::decayed_enumerator(const std::shared_ptr<enumerator_interface<TValue>>& source)
         : TBaseClass(false)
 		, _source(source)
 	{}
 
 	template<typename TValue>
-	bool shared_enumerator<TValue>::operator++()
+	bool decayed_enumerator<TValue>::operator++()
 	{
         if (TBaseClass::exhausted())
             return TBaseClass::is_valid();
@@ -69,13 +69,13 @@ namespace DefQuery
 	}
 
 	template<typename TValue>
-	const TValue& shared_enumerator<TValue>::operator*() const
+	const TValue& decayed_enumerator<TValue>::operator*() const
 	{
 		return _source->current();
 	}
 
     template<typename TValue>
-    const TValue* shared_enumerator<TValue>::operator->() const
+    const TValue* decayed_enumerator<TValue>::operator->() const
     {
         return &operator*();
     }

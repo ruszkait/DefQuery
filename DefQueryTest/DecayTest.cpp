@@ -2,14 +2,14 @@
 #include <array>
 #include "../DefQuery/from.h"
 #include "../DefQuery/where.h"
-#include "../DefQuery/share.h"
+#include "../DefQuery/decay.h"
 
-TEST(ShareTest, ShareFromTest)
+TEST(DecayTest, ShareFromTest)
 {
 	std::array<int, 10> arr = { 1,2,3,4,5,6 };
 
-	DefQuery::shared_enumerator<int> enumerator = DefQuery::from(&arr[0], &arr[4])
-		.share();
+	DefQuery::decayed_enumerator<int> enumerator = DefQuery::from(&arr[0], &arr[4])
+		.decay();
 
 	ASSERT_TRUE(++enumerator);
 	ASSERT_EQ(1, *enumerator);
@@ -23,15 +23,15 @@ TEST(ShareTest, ShareFromTest)
 	ASSERT_FALSE(++enumerator);
 }
 
-TEST(ShareTest, FilterSharedTest)
+TEST(DecayTest, FilterSharedTest)
 {
 	std::array<int, 10> arr = { 1,2,3,4,5,6 };
 
-	// At every sharing point the part before chain goes to the heap, so it makes it easy to pass it further
+	// At every decay point, the chain goes to the heap, so it makes it easy to pass it further,
 	// extend it even when the current stack frame is gone.
 	// This opens up the way to real deferred query execution
 	auto enumerator = DefQuery::from(&arr[0], &arr[4])
-		.share()
+		.decay()
 		.where([](const int a) { return a == 3; });
 
 	ASSERT_TRUE(++enumerator);
@@ -40,14 +40,14 @@ TEST(ShareTest, FilterSharedTest)
 	ASSERT_FALSE(++enumerator);
 }
 
-TEST(ShareTest, DoubleSharingTest)
+TEST(DecayTest, DoubleSharingTest)
 {
 	std::array<int, 10> arr = { 1,2,3,4,5,6 };
 
-	// Sharing along a chain is useful when independent stages add links to the query chain
+	// Decaying along a chain is useful when independent stages add links to the query chain
 	auto enumerator = DefQuery::from(&arr[0], &arr[4])
-		.share()
-		.share()
+		.decay()
+		.decay()
 		.where([](const int a) { return a == 3; });
 
 	ASSERT_TRUE(++enumerator);

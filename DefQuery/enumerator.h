@@ -22,7 +22,7 @@ namespace DefQuery
 	class stlrange_adapter;
 
 	template <typename TValue>
-	class shared_enumerator;
+	class decayed_enumerator;
 
     template <typename TSourceEnumerator>
     class orderby_enumerator;
@@ -77,8 +77,8 @@ namespace DefQuery
         selectmany_enumerator<TDerived, TEnumeratorProjection> selectmany(const TEnumeratorProjection& projector) &&;
 
         // Erases the underlying decorator chain type.
-        shared_enumerator<TValue> share() &;
-        shared_enumerator<TValue> share() &&;
+		decayed_enumerator<TValue> decay() &;
+		decayed_enumerator<TValue> decay() &&;
 
 		// Creates an STL range from the enumerator
 		stlrange_adapter<TDerived> stlrange() &;
