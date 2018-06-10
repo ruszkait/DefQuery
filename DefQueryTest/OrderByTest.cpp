@@ -23,28 +23,28 @@ TEST(OrderByTest, MultiStageSortingTest)
 
     
     auto enumerator = DefQuery::from(persons)
-        .orderby([](const auto& personA, const auto& personB) { return personA._name < personB._name ? -1 : personA._name == personB._name ? 0 : +1; })
-        .thenby([](const auto& personA, const auto& personB) { return personA._age < personB._age ? -1 : personA._age == personB._age ? 0 : +1; })
+        .orderby([](const auto& personA, const auto& personB) { return personA._name.compare(personB._name); })
+        .thenby([](const auto& personA, const auto& personB) { return int(personA._age - personB._age); })
         .thenby([](const auto& personA, const auto& personB) { return personA._pets.size() < personB._pets.size() ? -1 : personA._pets.size() == personB._pets.size() ? 0 : +1; });
     
     ASSERT_TRUE(++enumerator);
-    ASSERT_EQ("Hanna", (*enumerator)._name);
-    ASSERT_EQ(11, (*enumerator)._age);
-    ASSERT_EQ(1, (*enumerator)._pets.size());
+    ASSERT_EQ("Hanna", enumerator->_name);
+    ASSERT_EQ(11, enumerator->_age);
+    ASSERT_EQ(1, enumerator->_pets.size());
     ASSERT_TRUE(++enumerator);
-    ASSERT_EQ("Hanna", (*enumerator)._name);
-    ASSERT_EQ(11, (*enumerator)._age);
-    ASSERT_EQ(2, (*enumerator)._pets.size());
+    ASSERT_EQ("Hanna", enumerator->_name);
+    ASSERT_EQ(11, enumerator->_age);
+    ASSERT_EQ(2, enumerator->_pets.size());
     ASSERT_TRUE(++enumerator);
-    ASSERT_EQ("Hanna", (*enumerator)._name);
-    ASSERT_EQ(14, (*enumerator)._age);
+    ASSERT_EQ("Hanna", enumerator->_name);
+    ASSERT_EQ(14, enumerator->_age);
     ASSERT_TRUE(++enumerator);
-    ASSERT_EQ("Hanna", (*enumerator)._name);
-    ASSERT_EQ(19, (*enumerator)._age);
+    ASSERT_EQ("Hanna", enumerator->_name);
+    ASSERT_EQ(19, enumerator->_age);
     ASSERT_TRUE(++enumerator);
-    ASSERT_EQ("Oliver", (*enumerator)._name);
+    ASSERT_EQ("Oliver", enumerator->_name);
     ASSERT_TRUE(++enumerator);
-    ASSERT_EQ("Peter", (*enumerator)._name);
+    ASSERT_EQ("Peter", enumerator->_name);
     ASSERT_FALSE(++enumerator);
     ASSERT_FALSE(++enumerator);
 }
@@ -61,8 +61,8 @@ TEST(OrderByTest, EmptyTest)
     std::vector<Person> persons;
     
     auto enumerator = DefQuery::from(persons)
-        .orderby([](const auto& personA, const auto& personB) { return personA._name < personB._name ? -1 : personA._name == personB._name ? 0 : +1; })
-        .thenby([](const auto& personA, const auto& personB) { return personA._age < personB._age ? -1 : personA._age == personB._age ? 0 : +1; });
+        .orderby([](const auto& personA, const auto& personB) { return personA._name.compare(personB._name); })
+        .thenby([](const auto& personA, const auto& personB) { return int(personA._age - personB._age); });
     
     ASSERT_FALSE(++enumerator);
     ASSERT_FALSE(++enumerator);
@@ -86,26 +86,26 @@ TEST(OrderByTest, SmallWindowSizeTest)
     };
     
     auto enumerator = DefQuery::from(persons)
-        .orderby([](const auto& personA, const auto& personB) { return personA._name < personB._name ? -1 : personA._name == personB._name ? 0 : +1; })
-        .thenby([](const auto& personA, const auto& personB) { return personA._age < personB._age ? -1 : personA._age == personB._age ? 0 : +1; })
+        .orderby([](const auto& personA, const auto& personB) { return personA._name.compare(personB._name); })
+        .thenby([](const auto& personA, const auto& personB) { return int(personA._age - personB._age); })
         .window_size(2);
     
     ASSERT_TRUE(++enumerator);
-    ASSERT_EQ("Hanna", (*enumerator)._name);
-    ASSERT_EQ(19, (*enumerator)._age);
+    ASSERT_EQ("Hanna", enumerator->_name);
+    ASSERT_EQ(19, enumerator->_age);
     ASSERT_TRUE(++enumerator);
-    ASSERT_EQ("Hanna", (*enumerator)._name);
-    ASSERT_EQ(11, (*enumerator)._age);
+    ASSERT_EQ("Hanna", enumerator->_name);
+    ASSERT_EQ(11, enumerator->_age);
     ASSERT_TRUE(++enumerator);
-    ASSERT_EQ("Hanna", (*enumerator)._name);
-    ASSERT_EQ(11, (*enumerator)._age);
+    ASSERT_EQ("Hanna", enumerator->_name);
+    ASSERT_EQ(11, enumerator->_age);
     ASSERT_TRUE(++enumerator);
-    ASSERT_EQ("Hanna", (*enumerator)._name);
-    ASSERT_EQ(14, (*enumerator)._age);
+    ASSERT_EQ("Hanna", enumerator->_name);
+    ASSERT_EQ(14, enumerator->_age);
     ASSERT_TRUE(++enumerator);
-    ASSERT_EQ("Oliver", (*enumerator)._name);
+    ASSERT_EQ("Oliver", enumerator->_name);
     ASSERT_TRUE(++enumerator);
-    ASSERT_EQ("Peter", (*enumerator)._name);
+    ASSERT_EQ("Peter", enumerator->_name);
     ASSERT_FALSE(++enumerator);
     ASSERT_FALSE(++enumerator);
 }
@@ -127,19 +127,19 @@ TEST(OrderByTest, DescendingOrderTest)
     
     
     auto enumerator = DefQuery::from(persons)
-        .orderby([](const auto& personA, const auto& personB) { return personA._name < personB._name ? -1 : personA._name == personB._name ? 0 : +1; }, DefQuery::sorting_order::descending)
-        .thenby([](const auto& personA, const auto& personB) { return personA._age < personB._age ? -1 : personA._age == personB._age ? 0 : +1; }, DefQuery::sorting_order::ascending);
+        .orderby([](const auto& personA, const auto& personB) { return personA._name.compare(personB._name); }, DefQuery::sorting_order::descending)
+        .thenby([](const auto& personA, const auto& personB) { return int(personA._age - personB._age); }, DefQuery::sorting_order::ascending);
     
     ASSERT_TRUE(++enumerator);
-    ASSERT_EQ("Peter", (*enumerator)._name);
+    ASSERT_EQ("Peter", enumerator->_name);
     ASSERT_TRUE(++enumerator);
-    ASSERT_EQ("Oliver", (*enumerator)._name);
+    ASSERT_EQ("Oliver", enumerator->_name);
     ASSERT_TRUE(++enumerator);
-    ASSERT_EQ("Hanna", (*enumerator)._name);
-    ASSERT_EQ(9, (*enumerator)._age);
+    ASSERT_EQ("Hanna", enumerator->_name);
+    ASSERT_EQ(9, enumerator->_age);
     ASSERT_TRUE(++enumerator);
-    ASSERT_EQ("Hanna", (*enumerator)._name);
-    ASSERT_EQ(19, (*enumerator)._age);
+    ASSERT_EQ("Hanna", enumerator->_name);
+    ASSERT_EQ(19, enumerator->_age);
     ASSERT_FALSE(++enumerator);
     ASSERT_FALSE(++enumerator);
 }

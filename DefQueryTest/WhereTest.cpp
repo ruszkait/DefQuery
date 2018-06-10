@@ -32,3 +32,4 @@ TEST(WhereTest, EmptyTest)
     ASSERT_FALSE(++enumerator);
     ASSERT_FALSE(++enumerator);
 }
+

@@ -9,6 +9,10 @@ namespace DefQuery
     class range_enumerator : public enumerator<TValue, range_enumerator<TValue>>
     {
     public:
+        using TBaseClass = enumerator<TValue, range_enumerator<TValue>>;
+
+        range_enumerator();
+        
         range_enumerator(TValue begin, TValue end);
         
         range_enumerator(const range_enumerator& other) = default;
@@ -20,6 +24,7 @@ namespace DefQuery
         
         bool operator++();
         const TValue& operator*() const;
+        const TValue* operator->() const;
         
     private:
         bool move_next() override { return this->operator++(); }
@@ -40,12 +45,20 @@ namespace DefQuery
     }
 
     template<typename TValue>
+    range_enumerator<TValue>::range_enumerator()
+        : TBaseClass(true)
+    {}
+    
+    template<typename TValue>
     range_enumerator<TValue>::range_enumerator(TValue begin, TValue end)
-        : _current(begin)
+        : TBaseClass(false)
+        , _current(begin)
         , _end(end)
         , _step(1)
         , _firstMoveNext(true)
     {
+        auto containerEndHasBeenReached = _current == _end;
+        TBaseClass::exhausted(containerEndHasBeenReached);
     }
 
     template<typename TValue>
@@ -58,9 +71,8 @@ namespace DefQuery
     template<typename TValue>
     bool range_enumerator<TValue>::operator++()
     {
-        auto containerEndHasBeenReached = _current == _end;
-        if (containerEndHasBeenReached)
-            return false;
+        if (TBaseClass::exhausted())
+            return TBaseClass::is_valid();
         
         if (_firstMoveNext)
             _firstMoveNext = false;
@@ -68,13 +80,20 @@ namespace DefQuery
             for (auto stepsLeft = _step; stepsLeft > 0 && _current != _end; --stepsLeft)
                 ++_current;
         
-        auto containerEndHasNotBeenReached = _current != _end;
-        return containerEndHasNotBeenReached;
+        auto containerEndHasBeenReached = _current == _end;
+        TBaseClass::exhausted(containerEndHasBeenReached);
+        return TBaseClass::is_valid();
     }
     
     template<typename TValue>
     const TValue& range_enumerator<TValue>::operator*() const
     {
         return _current;
+    }
+
+    template<typename TValue>
+    const TValue* range_enumerator<TValue>::operator->() const
+    {
+        return &operator*();
     }
 }

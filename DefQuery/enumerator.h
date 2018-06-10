@@ -12,10 +12,10 @@ namespace DefQuery
 	template <typename TSourceEnumerator, typename TFilter>
 	class where_enumerator;
 
-	template <typename TSourceEnumerator, typename TProjection, typename TProjectedValue>
+	template <typename TSourceEnumerator, typename TProjection>
 	class select_enumerator;
 
-	template <typename TSourceEnumerator, typename TEnumeratorProjection, typename TProjectedEnumeratorValue>
+	template <typename TSourceEnumerator, typename TEnumeratorProjection>
 	class selectmany_enumerator;
 
 	template <typename TSourceEnumerator>
@@ -32,6 +32,9 @@ namespace DefQuery
         descending
     };
 
+    template <typename TLeftEnumerator, typename TRightEnumerator, typename TKeyProjectionLeft, typename TKeyProjectionRight, typename TMerging>
+    class join_enumerator;
+    
 	template <typename TValue>
 	class enumerator_interface
 	{
@@ -47,9 +50,6 @@ namespace DefQuery
         // Prefer the usage of the enumerator operator*() over this function,
         // this saves the cost of calling a virtual function
         virtual const TValue& current() const = 0;
-
-	protected:
-		virtual std::shared_ptr<enumerator_interface<TValue>> clone() const = 0;
 	};
 
 	template <typename TValue, typename TDerived>
@@ -60,27 +60,33 @@ namespace DefQuery
         
 		// Keeps the data that passes the filter predicate in the stream
 		template <typename TFilter>
-		where_enumerator<TDerived, TFilter> where(const TFilter& filter);
+		where_enumerator<TDerived, TFilter> where(const TFilter& filter) &;
+        template <typename TFilter>
+        where_enumerator<TDerived, TFilter> where(const TFilter& filter) &&;
 
 		// Transforms the source value to another type
-		template <typename TProjection, typename TProjectedValue = typename std::result_of<TProjection(const TValue&)>::type>
-		select_enumerator<TDerived, TProjection, TProjectedValue> select(const TProjection& projector);
+		template <typename TProjection>
+		select_enumerator<TDerived, TProjection> select(const TProjection& projector) &;
+        template <typename TProjection>
+        select_enumerator<TDerived, TProjection> select(const TProjection& projector) &&;
 
 		// Flattens out a hierarchical container structure
-		template <typename TEnumeratorProjection, typename TProjectedEnumerator = typename std::result_of<TEnumeratorProjection(const TValue&)>::type >
-		selectmany_enumerator<TDerived, TEnumeratorProjection, TProjectedEnumerator> selectmany(const TEnumeratorProjection& projector);
+		template <typename TEnumeratorProjection>
+		selectmany_enumerator<TDerived, TEnumeratorProjection> selectmany(const TEnumeratorProjection& projector) &;
+        template <typename TEnumeratorProjection>
+        selectmany_enumerator<TDerived, TEnumeratorProjection> selectmany(const TEnumeratorProjection& projector) &&;
 
         // Erases the underlying decorator chain type.
-		// Creates a shared pointer wrapper. This wrapper can be passed around by value cheap.
-		// Then the shared enumerator can be further decorated by other enumerators.
-        shared_enumerator<TValue> share();
+        shared_enumerator<TValue> share() &;
+        shared_enumerator<TValue> share() &&;
 
 		// Creates an STL range from the enumerator
-		stlrange_adapter<TDerived> stlrange();
+		stlrange_adapter<TDerived> stlrange() &;
+        stlrange_adapter<TDerived> stlrange() &&;
 
 		// Accumulates the values of the underlying enumerator to an accumlator
-		template <typename TAccumlatorInitializer, typename TFolding, typename TAccumlator = typename std::result_of<TAccumlatorInitializer(const TValue&)>::type>
-		TAccumlator aggregate(TFolding folder, TAccumlatorInitializer accumlatorInitializer);
+		template <typename TAccumlatorInitializer, typename TFolding>
+		typename std::result_of<TAccumlatorInitializer(const TValue&)>::type aggregate(TFolding folder, TAccumlatorInitializer accumlatorInitializer);
 
 		// Returns the number of elements
 		std::size_t count();
@@ -88,7 +94,6 @@ namespace DefQuery
         // Returns if any element fulfills the search criteria
         template <typename TFilter>
         bool contains(TFilter filter);
-
         bool contains(const TValue& searched);
 
         // Creates a list out of the query results
@@ -98,16 +103,32 @@ namespace DefQuery
         std::vector<TValue> vector();
 
         // Sorting with a certain window size
-        orderby_enumerator<TDerived> orderby(const std::function<int(const TValue&, const TValue&)>& comparator, sorting_order order = sorting_order::ascending);
+        orderby_enumerator<TDerived> orderby(const std::function<int(const TValue&, const TValue&)>& comparator, sorting_order order = sorting_order::ascending) &;
+        orderby_enumerator<TDerived> orderby(const std::function<int(const TValue&, const TValue&)>& comparator, sorting_order order = sorting_order::ascending) &&;
 
-	protected:
-		std::shared_ptr<enumerator_interface<TValue>> clone() const override;
+        // Returns the first element of the enumeration
+        TValue first();
+        
+        // Joins two enumerators based on their keys
+        template <typename TRightEnumerator, typename TKeyProjectionLeft, typename TKeyProjectionRight, typename TMerging>
+        join_enumerator<TDerived, TRightEnumerator, TKeyProjectionLeft, TKeyProjectionRight, TMerging> join(TRightEnumerator&& sourceRight, const TKeyProjectionLeft& keyProjectionLeft, const TKeyProjectionRight& keyProjectionRight, const TMerging& merging) &;
+        template <typename TRightEnumerator, typename TKeyProjectionLeft, typename TKeyProjectionRight, typename TMerging>
+        join_enumerator<TDerived, TRightEnumerator, TKeyProjectionLeft, TKeyProjectionRight, TMerging> join(TRightEnumerator&& sourceRight, const TKeyProjectionLeft& keyProjectionLeft, const TKeyProjectionRight& keyProjectionRight, const TMerging& merging) &&;
+
+    protected:
+        enumerator(bool exhausted)
+            : _exhausted(exhausted)
+        {}
+        
+        enumerator(const enumerator& other) = default;
+        enumerator(enumerator&& other) = default;
+        enumerator& operator=(const enumerator& other) = default;
+        enumerator& operator=(enumerator&& other) = default;
+        
+        bool exhausted() const { return _exhausted; }
+        bool is_valid() const { return !_exhausted; }
+        void exhausted(bool value) { _exhausted = value; }
+        
+        bool _exhausted;
 	};
-
-	template <typename TValue, typename TDerived>
-	std::shared_ptr<enumerator_interface<TValue>> enumerator<TValue, TDerived>::clone() const
-	{
-		// Use make_shared to minimize the number of heap allocations
-		return std::make_shared<TDerived>(static_cast<const TDerived&>(*this));
-	}
 }

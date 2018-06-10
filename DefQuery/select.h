@@ -5,10 +5,15 @@
 
 namespace DefQuery
 {
-	template <typename TSourceEnumerator, typename TProjection, typename TProjectedValue>
-	class select_enumerator : public enumerator<TProjectedValue, select_enumerator<TSourceEnumerator, TProjection, TProjectedValue>>
+	template <typename TSourceEnumerator, typename TProjection>
+	class select_enumerator : public enumerator<typename std::result_of<TProjection(const typename TSourceEnumerator::value_type&)>::type, select_enumerator<TSourceEnumerator, TProjection>>
 	{
 	public:
+        using TProjectedValue = typename std::result_of<TProjection(const typename TSourceEnumerator::value_type&)>::type;
+        using TBaseClass = enumerator<typename std::result_of<TProjection(const typename TSourceEnumerator::value_type&)>::type, select_enumerator<TSourceEnumerator, TProjection>>;
+
+        select_enumerator();
+
         template <typename TSourceEnumeratorConstr>
 		select_enumerator(TSourceEnumeratorConstr&& source, const TProjection& projection);
         ~select_enumerator();
@@ -20,6 +25,7 @@ namespace DefQuery
 
 		bool operator++();
 		const TProjectedValue& operator*() const;
+        const TProjectedValue* operator->() const;
 
 	private:
 		bool move_next() override { return this->operator++(); }
@@ -36,28 +42,41 @@ namespace DefQuery
 	// ==============================================================================================
 
 	template <typename TValue, typename TDerived>
-	template <typename TProjection, typename TProjectedValue>
-	select_enumerator<TDerived, TProjection, TProjectedValue> enumerator<TValue, TDerived>::select(const TProjection& projector)
+	template <typename TProjection>
+	select_enumerator<TDerived, TProjection> enumerator<TValue, TDerived>::select(const TProjection& projector) &&
 	{
-        return select_enumerator<TDerived, TProjection, TProjectedValue>(std::move(static_cast<TDerived&>(*this)), projector);
+        return select_enumerator<TDerived, TProjection>(std::move(static_cast<TDerived&>(*this)), projector);
 	}
 
-	template <typename TSourceEnumerator, typename TProjection, typename TProjectedValue>
+    template <typename TValue, typename TDerived>
+    template <typename TProjection>
+    select_enumerator<TDerived, TProjection> enumerator<TValue, TDerived>::select(const TProjection& projector) &
+    {
+        return select_enumerator<TDerived, TProjection>(static_cast<TDerived&>(*this), projector);
+    }
+
+    template <typename TSourceEnumerator, typename TProjection>
+    select_enumerator<TSourceEnumerator, TProjection>::select_enumerator()
+        : TBaseClass(true)
+     {}
+    
+	template <typename TSourceEnumerator, typename TProjection>
     template <typename TSourceEnumeratorConstr>
-	select_enumerator<TSourceEnumerator, TProjection, TProjectedValue>::select_enumerator(TSourceEnumeratorConstr&& source, const TProjection& projector)
-        : _source(std::forward<TSourceEnumeratorConstr>(source))
+	select_enumerator<TSourceEnumerator, TProjection>::select_enumerator(TSourceEnumeratorConstr&& source, const TProjection& projector)
+        : TBaseClass(false)
+        , _source(std::forward<TSourceEnumeratorConstr>(source))
 		, _projector(projector)
         , _currentProjectedValueDefined(false)
     {}
     
-    template <typename TSourceEnumerator, typename TProjection, typename TProjectedValue>
-    select_enumerator<TSourceEnumerator, TProjection, TProjectedValue>::~select_enumerator()
+    template <typename TSourceEnumerator, typename TProjection>
+    select_enumerator<TSourceEnumerator, TProjection>::~select_enumerator()
     {
         free_current_projected_value();
     }
 
-    template <typename TSourceEnumerator, typename TProjection, typename TProjectedValue>
-    void select_enumerator<TSourceEnumerator, TProjection, TProjectedValue>::free_current_projected_value()
+    template <typename TSourceEnumerator, typename TProjection>
+    void select_enumerator<TSourceEnumerator, TProjection>::free_current_projected_value()
     {
         if (!_currentProjectedValueDefined)
             return;
@@ -66,9 +85,12 @@ namespace DefQuery
         _currentProjectedValueDefined = false;
     }
     
-	template <typename TSourceEnumerator, typename TProjection, typename TProjectedValue>
-	bool select_enumerator<TSourceEnumerator, TProjection, TProjectedValue>::operator++()
+	template <typename TSourceEnumerator, typename TProjection>
+	bool select_enumerator<TSourceEnumerator, TProjection>::operator++()
 	{
+        if (TBaseClass::exhausted())
+            return TBaseClass::is_valid();
+        
 		auto isSourceNotExhausted = ++_source;
 		if (isSourceNotExhausted)
         {
@@ -77,12 +99,20 @@ namespace DefQuery
 			new (_currentProjectedValue.data()) TProjectedValue(_projector(*_source));
             _currentProjectedValueDefined = true;
         }
-		return isSourceNotExhausted;
+        
+        TBaseClass::exhausted(!isSourceNotExhausted);
+		return TBaseClass::is_valid();
 	}
 
-	template <typename TSourceEnumerator, typename TProjection, typename TProjectedValue>
-	const TProjectedValue& select_enumerator<TSourceEnumerator, TProjection, TProjectedValue>::operator*() const
+	template <typename TSourceEnumerator, typename TProjection>
+	const typename select_enumerator<TSourceEnumerator, TProjection>::TProjectedValue& select_enumerator<TSourceEnumerator, TProjection>::operator*() const
 	{
 		return *reinterpret_cast<const TProjectedValue*>(_currentProjectedValue.data());
 	}
+
+    template <typename TSourceEnumerator, typename TProjection>
+    const typename select_enumerator<TSourceEnumerator, TProjection>::TProjectedValue* select_enumerator<TSourceEnumerator, TProjection>::operator->() const
+    {
+        return &operator*();
+    }
 }

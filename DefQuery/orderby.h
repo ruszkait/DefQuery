@@ -12,6 +12,9 @@ namespace DefQuery
     {
     public:
         using TComparator = std::function<int(const typename TSourceEnumerator::value_type&, const typename TSourceEnumerator::value_type&)>;
+        using TBaseClass = enumerator<typename TSourceEnumerator::value_type, orderby_enumerator<TSourceEnumerator>>;
+
+        orderby_enumerator();
         
         template <typename TSourceEnumeratorConstr>
         orderby_enumerator(TSourceEnumeratorConstr&& source, const TComparator& comparator, sorting_order order);
@@ -23,6 +26,7 @@ namespace DefQuery
         
         bool operator++();
         const typename TSourceEnumerator::value_type& operator*() const;
+        const typename TSourceEnumerator::value_type* operator->() const;
         
         orderby_enumerator& window_size(std::size_t size);
         orderby_enumerator& thenby(const TComparator& comparator, sorting_order order = sorting_order::ascending);
@@ -49,9 +53,15 @@ namespace DefQuery
     // ==============================================================================================
     
     template <typename TValue, typename TDerived>
-    orderby_enumerator<TDerived> enumerator<TValue, TDerived>::orderby(const std::function<int(const value_type&, const value_type&)>& comparator, sorting_order order)
+    orderby_enumerator<TDerived> enumerator<TValue, TDerived>::orderby(const std::function<int(const value_type&, const value_type&)>& comparator, sorting_order order) &&
     {
         return orderby_enumerator<TDerived>(std::move(static_cast<TDerived&>(*this)), comparator, order);
+    }
+
+    template <typename TValue, typename TDerived>
+    orderby_enumerator<TDerived> enumerator<TValue, TDerived>::orderby(const std::function<int(const value_type&, const value_type&)>& comparator, sorting_order order) &
+    {
+        return orderby_enumerator<TDerived>(static_cast<TDerived&>(*this), comparator, order);
     }
 
     template <class TStlAdapter>
@@ -64,11 +74,17 @@ namespace DefQuery
         
         return AdapterProtectedMemberAccessor::get_container(adapter);
     }
+
+    template<typename TSourceEnumerator>
+    orderby_enumerator<TSourceEnumerator>::orderby_enumerator()
+        : TBaseClass(true)
+    {}
     
     template<typename TSourceEnumerator>
     template <typename TSourceEnumeratorConstr>
     orderby_enumerator<TSourceEnumerator>::orderby_enumerator(TSourceEnumeratorConstr&& source, const TComparator& comparator, sorting_order order)
-        : _source(std::forward<TSourceEnumeratorConstr>(source))
+        : TBaseClass(false)
+        , _source(std::forward<TSourceEnumeratorConstr>(source))
         , _sortingPolicies({{ comparator, order }})
         , _sortingWindowMaxSize(std::numeric_limits<std::size_t>::max())
         , _sortingWindow([this](const typename TSourceEnumerator::value_type& left, const typename TSourceEnumerator::value_type& right){ return this->greater(left, right); })
@@ -76,7 +92,8 @@ namespace DefQuery
 
     template<typename TSourceEnumerator>
     orderby_enumerator<TSourceEnumerator>::orderby_enumerator(const orderby_enumerator& other)
-        : _source(other._source)
+        : TBaseClass(false)
+        , _source(other._source)
         , _sortingPolicies(other._sortingPolicies)
         , _sortingWindowMaxSize(other._sortingWindowMaxSize)
         // The captured this pointer shall change when the priority queue gets copied/moved, so we have to do it manually
@@ -87,7 +104,8 @@ namespace DefQuery
 
     template<typename TSourceEnumerator>
     orderby_enumerator<TSourceEnumerator>::orderby_enumerator(orderby_enumerator&& other)
-        : _source(std::move(other._source))
+        : TBaseClass(false)
+        , _source(std::move(other._source))
         , _sortingPolicies(std::move(other._sortingPolicies))
         , _sortingWindowMaxSize(other._sortingWindowMaxSize)
         // The captured this pointer shall change when the priority queue gets copied/moved, so we have to do it manually
@@ -135,6 +153,9 @@ namespace DefQuery
     template<typename TSourceEnumerator>
     bool orderby_enumerator<TSourceEnumerator>::operator++()
     {
+        if (TBaseClass::exhausted())
+            return TBaseClass::is_valid();
+        
         auto topElementWasAlreadyConsumed = !_sortingWindow.empty();
         if (topElementWasAlreadyConsumed)
             _sortingWindow.pop();
@@ -143,7 +164,8 @@ namespace DefQuery
         while(_sortingWindow.size() < _sortingWindowMaxSize && ++_source)
             _sortingWindow.emplace(*_source);
         
-        return !_sortingWindow.empty();
+        TBaseClass::exhausted(_sortingWindow.empty());
+        return TBaseClass::is_valid();
     }
     
     template<typename TSourceEnumerator>
@@ -152,6 +174,12 @@ namespace DefQuery
         return _sortingWindow.top();
     }
 
+    template<typename TSourceEnumerator>
+    const typename TSourceEnumerator::value_type* orderby_enumerator<TSourceEnumerator>::operator->() const
+    {
+        return &operator*();
+    }
+    
     template<typename TSourceEnumerator>
     orderby_enumerator<TSourceEnumerator>& orderby_enumerator<TSourceEnumerator>::window_size(std::size_t size)
     {

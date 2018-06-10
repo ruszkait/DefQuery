@@ -32,10 +32,26 @@ TEST(AggregateTest, JoinStringsToStreamTest)
     std::list<int> lis = { 1,2,3 };
     
     auto joinedList = DefQuery::from(lis)
-    .aggregate([](std::stringstream& accumlator, int a) { accumlator << ',' << a; },
-		[](int a) { std::stringstream accumlator; accumlator << a; return std::move(accumlator); });
+        .aggregate([](std::stringstream& accumlator, int a) { accumlator << ',' << a; },
+                   [](int a) { std::stringstream accumlator; accumlator << a; return accumlator; });
     
     ASSERT_EQ("1,2,3", joinedList.str());
+}
+
+TEST(AggregateTest, JoinStringsToExistingStreamTest)
+{
+    std::list<int> lis = { 1,2,3 };
+    
+    std::stringstream stringStream;
+    stringStream << "my numbers:";
+    
+    // Preferably do not use the return value in this case, just check the captured stringStream content
+    // The return value is a pointer to the stringStream or a nullptr if the input enumerator was empty
+    DefQuery::from(lis)
+        .aggregate([](std::stringstream* accumlator, int a) { *accumlator << ',' << a; },
+                   [stringStream = &stringStream](int a) { *stringStream << a; return stringStream; });
+    
+    ASSERT_EQ("my numbers:1,2,3", stringStream.str());
 }
 
 TEST(AggregateTest, AggregateOneTest)
@@ -43,8 +59,8 @@ TEST(AggregateTest, AggregateOneTest)
     std::list<int> lis = { 1 };
     
     auto joinedList = DefQuery::from(lis)
-    .aggregate([](std::string& accumlator, int a) { accumlator += ',' + std::to_string(a); },
-               [](int a) { return std::to_string(a); });
+        .aggregate([](std::string& accumlator, int a) { accumlator += ',' + std::to_string(a); },
+                   [](int a) { return std::to_string(a); });
     
     ASSERT_EQ("1", joinedList);
 }
@@ -53,9 +69,7 @@ TEST(AggregateTest, AggregateNoneTest)
 {
     std::list<int> lis;
     
-    auto joinedList = DefQuery::from(lis)
-    .aggregate([](std::string& accumlator, int a) { accumlator += ',' + std::to_string(a); },
-               [](int a) { return std::to_string(a); });
-    
-    ASSERT_EQ("", joinedList);
+    EXPECT_THROW(DefQuery::from(lis)
+        .aggregate([](std::string& accumlator, int a) { accumlator += ',' + std::to_string(a); },
+                   [](int a) { return std::to_string(a); }), std::runtime_error);
 }

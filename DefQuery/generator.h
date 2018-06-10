@@ -9,6 +9,9 @@ namespace DefQuery
 	class generator_enumerator : public enumerator<TValue, generator_enumerator<TValue>>
 	{
 	public:
+        using TBaseClass = enumerator<TValue, generator_enumerator<TValue>>;
+        
+        generator_enumerator();
 		generator_enumerator(const std::function<bool(TValue&)>& yieldCalculator);
 
 		generator_enumerator(const generator_enumerator& other) = default;
@@ -18,6 +21,7 @@ namespace DefQuery
 
 		bool operator++();
 		const TValue& operator*() const;
+        const TValue* operator->() const;
 
 	protected:
 		bool move_next() override { return this->operator++(); }
@@ -36,16 +40,26 @@ namespace DefQuery
 		return generator_enumerator<TValue>(yieldCalculator);
 	}
 
+    template<typename TValue>
+    generator_enumerator<TValue>::generator_enumerator()
+        : TBaseClass(true)
+    {}
+    
 	template<typename TValue>
 	generator_enumerator<TValue>::generator_enumerator(const std::function<bool(TValue&)>& yieldCalculator)
-		: _yieldCalculator(yieldCalculator)
+		: TBaseClass(false)
+        , _yieldCalculator(yieldCalculator)
 	{}
 
 	template<typename TValue>
 	bool generator_enumerator<TValue>::operator++()
 	{
+        if (TBaseClass::exhausted())
+            return TBaseClass::is_valid();
+        
 		auto notExhausted = _yieldCalculator(_current);
-		return notExhausted;
+        TBaseClass::exhausted(!notExhausted);
+		return TBaseClass::is_valid();
 	}
 
 	template<typename TValue>
@@ -53,4 +67,10 @@ namespace DefQuery
 	{
 		return _current;
 	}
+
+    template<typename TValue>
+    const TValue* generator_enumerator<TValue>::operator->() const
+    {
+        return &operator*();
+    }
 }

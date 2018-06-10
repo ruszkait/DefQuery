@@ -1,5 +1,6 @@
 #pragma once 
 
+#include <exception>
 #include "enumerator.h"
 
 namespace DefQuery
@@ -7,16 +8,17 @@ namespace DefQuery
 	// ==============================================================================================
 
 	template <typename TValue, typename TDerived>
-	template <typename TAccumlatorInitializer, typename TFolding, typename TAccumlator>
-	TAccumlator enumerator<TValue, TDerived>::aggregate(TFolding folder, TAccumlatorInitializer accumlatorInitializer)
+	template <typename TAccumlatorInitializer, typename TFolding>
+	typename std::result_of<TAccumlatorInitializer(const TValue&)>::type enumerator<TValue, TDerived>::aggregate(TFolding folder, TAccumlatorInitializer accumlatorInitializer)
     {
         // Use the derived type directly to avoid using virtual functions
         // to progress with source enumerator consumption
         auto& self = static_cast<TDerived&>(*this);
 
         if (!self.operator++())
-			return TAccumlator();
+            throw std::runtime_error("cannot aggregatae an empty enumeration");
 
+        using TAccumlator = typename std::result_of<TAccumlatorInitializer(const TValue&)>::type;
         TAccumlator accumlator = accumlatorInitializer(self.operator*());
 
         while (self.operator++())

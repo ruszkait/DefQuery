@@ -47,10 +47,16 @@ namespace DefQuery
 	// ==============================================================================================
 
 	template <typename TValue, typename TDerived>
-	stlrange_adapter<TDerived> enumerator<TValue, TDerived>::stlrange()
+	stlrange_adapter<TDerived> enumerator<TValue, TDerived>::stlrange() &&
 	{
         return stlrange_adapter<TDerived>(std::move(static_cast<TDerived&>(*this)));
 	}
+
+    template <typename TValue, typename TDerived>
+    stlrange_adapter<TDerived> enumerator<TValue, TDerived>::stlrange() &
+    {
+        return stlrange_adapter<TDerived>(static_cast<TDerived&>(*this));
+    }
 
 	template<typename TSourceEnumerator>
     template <typename TSourceEnumeratorConstr>
