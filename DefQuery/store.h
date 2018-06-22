@@ -7,13 +7,14 @@ namespace DefQuery
 	// ==============================================================================================
 
 	template <typename TValue, typename TDerived>
-	std::list<TValue> enumerator<TValue, TDerived>::list()
+	template <typename TContainer>
+	TContainer enumerator<TValue, TDerived>::store(const std::function<void(TContainer&, const TValue&)>& containerInserter)
 	{
-		std::list<TValue> result;
+		TContainer container;
 		auto& self = static_cast<TDerived&>(*this);
 		while (self.operator++())
-			result.emplace_back(self.operator*());
+			containerInserter(container, self.operator*());
 
-		return result;
+		return container;
 	}
 }

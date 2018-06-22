@@ -7,13 +7,18 @@ namespace DefQuery
 	// ==============================================================================================
 
 	template <typename TValue, typename TDerived>
-	std::list<TValue> enumerator<TValue, TDerived>::list()
+	template <typename TFilter>
+	bool enumerator<TValue, TDerived>::any(const TFilter& filter)
 	{
-		std::list<TValue> result;
 		auto& self = static_cast<TDerived&>(*this);
-		while (self.operator++())
-			result.emplace_back(self.operator*());
 
-		return result;
+		while (++self)
+		{
+			auto itemPassedTheFilter = filter(*self);
+			if (itemPassedTheFilter)
+				return true;
+		}
+
+		return false;
 	}
 }

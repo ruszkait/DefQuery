@@ -1,25 +1,25 @@
 #include "gtest/gtest.h"
 #include <list>
-#include <array>
+#include <vector>
 #include "../DefQuery/from.h"
 #include "../DefQuery/vector.h"
 
 TEST(VectorTest, SubCollectionTest)
 {
-    std::array<int, 10> arr = { 1,2,3,4,5,6 };
-    
-    auto subArrVector = DefQuery::from(&arr[0], &arr[4])
-        .vector();
-    
-    ASSERT_EQ(std::vector<int>({1,2,3,4}), subArrVector);
+	std::vector<int> vector = { 1,2,3,4 };
+
+	auto subVector = DefQuery::from(vector)
+		.vector();
+
+	ASSERT_EQ(std::vector<int>({ 1,2,3,4 }), subVector);
 }
 
 TEST(VectorTest, EmptyCollectionTest)
 {
-    std::array<int, 10> arr = { 1,2,3,4,5,6 };
-    
-    auto subArrVector = DefQuery::from(&arr[0], &arr[0])
-        .vector();
-    
-    ASSERT_TRUE(subArrVector.empty());
+	std::vector<int> vector;
+
+	auto subVector = DefQuery::from(vector)
+		.vector();
+
+	ASSERT_TRUE(subVector.empty());
 }

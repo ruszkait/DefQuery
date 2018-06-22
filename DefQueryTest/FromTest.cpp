@@ -1,49 +1,16 @@
 #include "gtest/gtest.h"
 #include <list>
-#include <array>
+#include <vector>
 #include "../DefQuery/from.h"
-
-TEST(FromTest, FromPointerTest)
-{
-	std::array<int, 10> arr = { 1,2,3,4,5,6 };
-
-	auto enumerator = DefQuery::from(&arr[0], &arr[4]);
-
-	ASSERT_TRUE(++enumerator);
-	ASSERT_EQ(1, *enumerator);
-	ASSERT_TRUE(++enumerator);
-	ASSERT_EQ(2, *enumerator);
-	ASSERT_TRUE(++enumerator);
-	ASSERT_EQ(3, *enumerator);
-	ASSERT_TRUE(++enumerator);
-	ASSERT_EQ(4, *enumerator);
-	ASSERT_FALSE(++enumerator);
-	ASSERT_FALSE(++enumerator);
-}
-
-TEST(FromTest, FromIteratorTest)
-{
-    std::list<int> list = { 1,2,3 };
-
-	auto enumerator = DefQuery::from(list.begin(), list.end());
-
-	ASSERT_TRUE(++enumerator);
-	ASSERT_EQ(1, *enumerator);
-	ASSERT_TRUE(++enumerator);
-	ASSERT_EQ(2, *enumerator);
-	ASSERT_TRUE(++enumerator);
-	ASSERT_EQ(3, *enumerator);
-	ASSERT_FALSE(++enumerator);
-	ASSERT_FALSE(++enumerator);
-}
+#include "../DefQuery/count.h"
 
 TEST(FromTest, FromContainerTest)
 {
 	std::list<int> list = { 1,2,3 };
 
-    // Warning: the from_enumerator does not own or make a copy of the collection, so make sure
-    // not to pass a temporal variable as the parameter, because it gets destroyed immediately
-    // after the from enumerator is created.
+	// Warning: the from_enumerator does not own or make a copy of the collection, so make sure
+	// not to pass a temporal variable as the parameter, because it gets destroyed immediately
+	// after the from enumerator is created.
 	auto enumerator = DefQuery::from(list);
 
 	ASSERT_TRUE(++enumerator);
@@ -64,4 +31,26 @@ TEST(FromTest, FromEmptyContainerTest)
 
 	ASSERT_FALSE(++enumerator);
 	ASSERT_FALSE(++enumerator);
+}
+
+TEST(FromTest, CopyTest)
+{
+	std::list<int> list = { 1,2,3 };
+
+	auto enumerator = DefQuery::from(list);
+	auto enumeratorCopy = enumerator;
+
+	ASSERT_EQ(3, enumerator.count());
+	ASSERT_EQ(3, enumeratorCopy.count());
+}
+
+TEST(FromTest, MoveTest)
+{
+	std::list<int> list = { 1,2,3 };
+
+	auto enumerator = DefQuery::from(list);
+	auto enumerator2 = std::move(enumerator);
+
+	ASSERT_EQ(0, enumerator.count());
+	ASSERT_EQ(3, enumerator2.count());
 }

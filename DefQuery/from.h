@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 #include "enumerator.h"
 
@@ -8,8 +8,8 @@ namespace DefQuery
 	class from_enumerator : public enumerator<TValue, from_enumerator<TIterator, TValue>>
 	{
 	public:
-        using TBaseClass = enumerator<TValue, from_enumerator<TIterator, TValue>>;
-        
+		using TBaseClass = enumerator<TValue, from_enumerator<TIterator, TValue>>;
+
 		from_enumerator();
 		from_enumerator(TIterator begin, TIterator end);
 
@@ -20,7 +20,7 @@ namespace DefQuery
 
 		bool operator++();
 		const TValue& operator*() const;
-        const TValue* operator->() const;
+		const TValue* operator->() const;
 
 	private:
 		bool move_next() override { return this->operator++(); }
@@ -33,22 +33,10 @@ namespace DefQuery
 
 	// ==============================================================================================
 
-	template <typename TValue>
-	from_enumerator<TValue*, TValue> from(TValue* begin, TValue* end)
-	{
-		return from_enumerator<TValue*, TValue>(begin, end);
-	}
-
-	template <typename TIterator>
-	from_enumerator<TIterator, typename TIterator::value_type> from(TIterator begin, TIterator end)
-	{
-		return from_enumerator<TIterator, typename TIterator::value_type>(begin, end);
-	}
-
 	template <typename TContainer>
 	from_enumerator<typename TContainer::const_iterator, typename TContainer::const_iterator::value_type> from(const TContainer& container)
 	{
-		return from(container.begin(), container.end());
+		return from_enumerator<typename TContainer::const_iterator, typename TContainer::const_iterator::value_type>(container.begin(), container.end());
 	}
 
 	template<typename TIterator, typename TValue>
@@ -58,29 +46,29 @@ namespace DefQuery
 
 	template<typename TIterator, typename TValue>
 	from_enumerator<TIterator, TValue>::from_enumerator(TIterator begin, TIterator end)
-        : TBaseClass(false)
+		: TBaseClass(false)
 		, _current(begin)
 		, _end(end)
 		, _firstMoveNext(true)
 	{
-        auto containerEndHasBeenReached = _current == _end;
-        TBaseClass::exhausted(containerEndHasBeenReached);
-    }
+		auto containerEndHasBeenReached = _current == _end;
+		TBaseClass::exhausted(containerEndHasBeenReached);
+	}
 
 	template<typename TIterator, typename TValue>
 	bool from_enumerator<TIterator, TValue>::operator++()
 	{
-        if (TBaseClass::exhausted())
-            return TBaseClass::is_valid();
-        
+		if (TBaseClass::exhausted())
+			return TBaseClass::is_valid();
+
 		if (_firstMoveNext)
 			_firstMoveNext = false;
 		else
 			++_current;
 
 		auto containerEndHasBeenReached = _current == _end;
-        TBaseClass::exhausted(containerEndHasBeenReached);
-        return TBaseClass::is_valid();
+		TBaseClass::exhausted(containerEndHasBeenReached);
+		return TBaseClass::is_valid();
 	}
 
 	template<typename TIterator, typename TValue>
@@ -89,9 +77,9 @@ namespace DefQuery
 		return *_current;
 	}
 
-    template<typename TIterator, typename TValue>
-    const TValue* from_enumerator<TIterator, TValue>::operator->() const
-    {
-        return &operator*();
-    }
+	template<typename TIterator, typename TValue>
+	const TValue* from_enumerator<TIterator, TValue>::operator->() const
+	{
+		return &operator*();
+	}
 }

@@ -1,14 +1,14 @@
 #include "gtest/gtest.h"
 #include <list>
 #include "../DefQuery/from.h"
-#include "../DefQuery/where.h"
+#include "../DefQuery/take.h"
 
-TEST(WhereTest, FilterTest)
+TEST(TakeTest, SimpleTest)
 {
 	std::list<int> list = { 1,2,3,4,5,6 };
 
 	auto enumerator = DefQuery::from(list)
-		.where([](const int a) { return a < 4 || a > 5; });
+		.take(3);
 
 	ASSERT_TRUE(++enumerator);
 	ASSERT_EQ(1, *enumerator);
@@ -16,29 +16,27 @@ TEST(WhereTest, FilterTest)
 	ASSERT_EQ(2, *enumerator);
 	ASSERT_TRUE(++enumerator);
 	ASSERT_EQ(3, *enumerator);
-	ASSERT_TRUE(++enumerator);
-	ASSERT_EQ(6, *enumerator);
 	ASSERT_FALSE(++enumerator);
 	ASSERT_FALSE(++enumerator);
 }
 
-TEST(WhereTest, EmptyTest)
+TEST(TakeTest, EmptyTest)
 {
 	std::list<int> list;
 
 	auto enumerator = DefQuery::from(list)
-		.where([](const int a) { return a < 4 || a > 5; });
+		.take(3);
 
 	ASSERT_FALSE(++enumerator);
 	ASSERT_FALSE(++enumerator);
 }
 
-TEST(WhereTest, CopyTest)
+TEST(TakeTest, CopyTest)
 {
 	std::list<int> list = { 1,2,3,4,5,6 };
 
 	auto enumerator = DefQuery::from(list)
-		.where([](const int a) { return a < 4 || a > 5; });
+		.take(3);
 
 	auto enumeratorCopy = enumerator;
 
@@ -48,8 +46,6 @@ TEST(WhereTest, CopyTest)
 	ASSERT_EQ(2, *enumerator);
 	ASSERT_TRUE(++enumerator);
 	ASSERT_EQ(3, *enumerator);
-	ASSERT_TRUE(++enumerator);
-	ASSERT_EQ(6, *enumerator);
 	ASSERT_FALSE(++enumerator);
 	ASSERT_FALSE(++enumerator);
 
@@ -59,18 +55,16 @@ TEST(WhereTest, CopyTest)
 	ASSERT_EQ(2, *enumeratorCopy);
 	ASSERT_TRUE(++enumeratorCopy);
 	ASSERT_EQ(3, *enumeratorCopy);
-	ASSERT_TRUE(++enumeratorCopy);
-	ASSERT_EQ(6, *enumeratorCopy);
 	ASSERT_FALSE(++enumeratorCopy);
 	ASSERT_FALSE(++enumeratorCopy);
 }
 
-TEST(WhereTest, MoveTest)
+TEST(TakeTest, MoveTest)
 {
 	std::list<int> list = { 1,2,3,4,5,6 };
 
 	auto enumerator = DefQuery::from(list)
-		.where([](const int a) { return a < 4 || a > 5; });
+		.take(3);
 
 	auto enumerator2 = std::move(enumerator);
 
@@ -83,8 +77,6 @@ TEST(WhereTest, MoveTest)
 	ASSERT_EQ(2, *enumerator2);
 	ASSERT_TRUE(++enumerator2);
 	ASSERT_EQ(3, *enumerator2);
-	ASSERT_TRUE(++enumerator2);
-	ASSERT_EQ(6, *enumerator2);
 	ASSERT_FALSE(++enumerator2);
 	ASSERT_FALSE(++enumerator2);
 }

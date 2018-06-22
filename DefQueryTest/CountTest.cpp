@@ -1,14 +1,14 @@
 #include "gtest/gtest.h"
 #include <list>
-#include <array>
+#include <vector>
 #include "../DefQuery/from.h"
 #include "../DefQuery/count.h"
 
 TEST(CountTest, SizeOfSubCollectionTest)
 {
-	std::array<int, 10> arr = { 1,2,3,4,5,6 };
+	std::vector<int> vector = { 1,2,3,4 };
 
-	auto subArrSize = DefQuery::from(&arr[0], &arr[4])
+	auto subArrSize = DefQuery::from(vector)
 		.count();
 
 	ASSERT_EQ(4, subArrSize);

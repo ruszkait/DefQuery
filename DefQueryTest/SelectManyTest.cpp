@@ -12,10 +12,10 @@ TEST(SelectManyTest, StructSubcontainerTest)
 		std::vector<std::string> _pets;
 	};
 
-	std::vector<Person> lis = { 
-		Person{ "Oliver", 10 , { "dog", "cat" }},
-		Person{ "Hanna", 11, { "fish", "bird" } },
-		Person{ "Peter", 20, { "dog", "bird" } }
+	std::vector<Person> lis = {
+	   Person{ "Oliver", 10 , { "dog", "cat" }},
+	   Person{ "Hanna", 11, { "fish", "bird" } },
+	   Person{ "Peter", 20, { "dog", "bird" } }
 	};
 
 	auto enumerator = DefQuery::from(lis)

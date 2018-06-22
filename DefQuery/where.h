@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 #include "enumerator.h"
 
@@ -8,12 +8,12 @@ namespace DefQuery
 	class where_enumerator : public enumerator<typename TSourceEnumerator::value_type, where_enumerator<TSourceEnumerator, TFilter>>
 	{
 	public:
-        using TBaseClass = enumerator<typename TSourceEnumerator::value_type, where_enumerator<TSourceEnumerator, TFilter>>;
-        
-        where_enumerator();
+		using TBaseClass = enumerator<typename TSourceEnumerator::value_type, where_enumerator<TSourceEnumerator, TFilter>>;
 
-        template <typename TSourceEnumeratorConstr>
-		where_enumerator(TSourceEnumeratorConstr&& source, const TFilter& filter);
+		where_enumerator();
+
+		template <typename TSourceEnumeratorConstr, typename TFilterConstr>
+		where_enumerator(TSourceEnumeratorConstr&& source, TFilterConstr&& filter);
 
 		where_enumerator(const where_enumerator& other) = default;
 		where_enumerator(where_enumerator&& other) = default;
@@ -22,7 +22,7 @@ namespace DefQuery
 
 		bool operator++();
 		const typename TSourceEnumerator::value_type& operator*() const;
-        const typename TSourceEnumerator::value_type* operator->() const;
+		const typename TSourceEnumerator::value_type* operator->() const;
 
 	private:
 		bool move_next() override { return this->operator++(); }
@@ -36,37 +36,37 @@ namespace DefQuery
 
 	template <typename TValue, typename TDerived>
 	template <typename TFilter>
-	where_enumerator<TDerived, TFilter> enumerator<TValue, TDerived>::where(const TFilter& filter) &&
+	where_enumerator<TDerived, TFilter> enumerator<TValue, TDerived>::where(TFilter&& filter) &&
 	{
-        return where_enumerator<TDerived, TFilter>(std::move(static_cast<TDerived&>(*this)), filter);
+		return where_enumerator<TDerived, TFilter>(std::move(static_cast<TDerived&>(*this)), std::forward<TFilter>(filter));
 	}
 
-    template <typename TValue, typename TDerived>
-    template <typename TFilter>
-    where_enumerator<TDerived, TFilter> enumerator<TValue, TDerived>::where(const TFilter& filter) &
-    {
-        return where_enumerator<TDerived, TFilter>(static_cast<TDerived&>(*this), filter);
-    }
+	template <typename TValue, typename TDerived>
+	template <typename TFilter>
+	where_enumerator<TDerived, TFilter> enumerator<TValue, TDerived>::where(TFilter&& filter) &
+	{
+		return where_enumerator<TDerived, TFilter>(static_cast<TDerived&>(*this), std::forward<TFilter>(filter));
+	}
 
-    template<typename TSourceEnumerator, typename TFilter>
-    where_enumerator<TSourceEnumerator, TFilter>::where_enumerator()
-        : TBaseClass(true)
-    {}
-    
 	template<typename TSourceEnumerator, typename TFilter>
-    template <typename TSourceEnumeratorConstr>
-	where_enumerator<TSourceEnumerator, TFilter>::where_enumerator(TSourceEnumeratorConstr&& source, const TFilter& filter)
-        : TBaseClass(false)
-        , _source(std::forward<TSourceEnumeratorConstr>(source))
-		, _filter(filter)
+	where_enumerator<TSourceEnumerator, TFilter>::where_enumerator()
+		: TBaseClass(true)
+	{}
+
+	template<typename TSourceEnumerator, typename TFilter>
+	template <typename TSourceEnumeratorConstr, typename TFilterConstr>
+	where_enumerator<TSourceEnumerator, TFilter>::where_enumerator(TSourceEnumeratorConstr&& source, TFilterConstr&& filter)
+		: TBaseClass(false)
+		, _source(std::forward<TSourceEnumeratorConstr>(source))
+		, _filter(std::forward<TFilterConstr>(filter))
 	{}
 
 	template<typename TSourceEnumerator, typename TFilter>
 	bool where_enumerator<TSourceEnumerator, TFilter>::operator++()
 	{
-        if (TBaseClass::exhausted())
-            return TBaseClass::is_valid();
-        
+		if (TBaseClass::exhausted())
+			return TBaseClass::is_valid();
+
 		while (++_source)
 		{
 			auto itemPassedTheFilter = _filter(*_source);
@@ -74,7 +74,7 @@ namespace DefQuery
 				return TBaseClass::is_valid();
 		}
 
-        TBaseClass::exhausted(true);
+		TBaseClass::exhausted(true);
 		return TBaseClass::is_valid();
 	}
 
@@ -84,9 +84,9 @@ namespace DefQuery
 		return *_source;
 	}
 
-    template<typename TSourceEnumerator, typename TFilter>
-    const typename TSourceEnumerator::value_type* where_enumerator<TSourceEnumerator, TFilter>::operator->() const
-    {
-        return &operator*();
-    }
+	template<typename TSourceEnumerator, typename TFilter>
+	const typename TSourceEnumerator::value_type* where_enumerator<TSourceEnumerator, TFilter>::operator->() const
+	{
+		return &operator*();
+	}
 }
