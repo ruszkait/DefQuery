@@ -109,10 +109,13 @@ auto enumerator = DefQuery::from(persons)
 Sometimes you may only want to put the result of the enumeration directly into a container. For these cases there are convinience functions.
 ```
 std::array<int,4> numbers = { 1,2,3,4 };
+
 auto myList = DefQuery::from(numbers)
 	.list();
+
 auto myVector = DefQuery::from(numbers)
 	.vector();
+
 // For complexer containers (like associative containers), there is no direct function, use the store()
 auto squareMapping = DefQuery::from(numbers)
 	.store<std::map<double, double>>([](auto& map, auto& number) { map.emplace(number, number*number); });
@@ -152,12 +155,12 @@ struct PersonData	{
 
 auto enumerator = DefQuery::from(names)
 	.join(DefQuery::from(heights),
-	    // The key from the left side 
-		[](const auto& namesEntry) { auto key = namesEntry.first; return key; },
-	    // The key from the right side 
-		[](const auto& heightsEntry) { auto key = heightsEntry.first; return key; },
-		// Generator for the joined entries
-		[](const auto& namesEntry, const auto& heightsEntry) { auto& name = namesEntry.second; auto height = heightsEntry.second; return PersonData{ name, height }; });
+        // The key from the left side 
+        [](const auto& namesEntry) { auto key = namesEntry.first; return key; },
+        // The key from the right side 
+        [](const auto& heightsEntry) { auto key = heightsEntry.first; return key; },
+        // Generator for the joined entries
+        [](const auto& namesEntry, const auto& heightsEntry) { auto& name = namesEntry.second; auto height = heightsEntry.second; return PersonData{ name, height }; });
 ```
 
 ## Grouping
@@ -181,7 +184,7 @@ std::vector<Person> persons = {
 
 auto enumerator = DefQuery::from(persons)
     // Group by the first letter of the name
-	.groupby([](const auto& person) { return person._name[0]; });	
+    .groupby([](const auto& person) { return person._name[0]; });	
 
 while(++enumerator) {
     auto firstLetter = enumerator->_key;
