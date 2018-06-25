@@ -28,7 +28,8 @@ auto pointerRangeEnumerator = DefQuery::range(&numbers[0], &numbers[3]);
 // Integer range
 auto integerRangeEnumerator = DefQuery::range(0, 3);
 ```
-If you want to generate an inginite sequence, you may use an generator with a stateful lambda.
+If you create source data from an algorithm, and not from a container, then use a generator.
+Infinite sequences can be created by a generator with a stateful lambda.
 ```
 auto quadraticNumbers = DefQuery::generator<int>([_currentIndependent = 0](int& nextValue) mutable
 {
@@ -50,7 +51,7 @@ auto enumerator = DefQuery::from(vector);
 std::list<int> copiedValues;
 auto stlRange = enumerator.stlrange();
 ```
-Use a range based for look
+Use a range based for loop
 ```
 for (auto number : stlRange)
 	copiedValues.push_back(number);
@@ -61,7 +62,7 @@ std::copy(stlRange.begin(), stlRange.end(), std::back_inserter(copiedValues));
 ```
 
 ## Filtering
-With filtering we can use a boolean function (predicate) that tells if the current value of the enumeration may go further in the chain or it gets discarded. Note that you use the fluent API (next stage is added with the dot operator) to join further elements to the end of the enumerator chain (this case the chain starts with a from adapter and continues with a filtering stage.
+With filtering we can use a boolean function (predicate) that tells if the current value of the enumeration may go further in the chain or it gets discarded. Note that you use the fluent API (next stage is added with the dot operator) to join further elements to the end of the enumerator chain. In this example the chain starts with a from adapter and continues with a filtering stage.
 ```
 std::list<int> numbers = { 1,2,3,4,5,6 };
 auto enumerator = DefQuery::from(numbers)
@@ -70,8 +71,7 @@ auto enumerator = DefQuery::from(numbers)
 ## Projection
 We may need to change the type of the value of the enumerator chain. In the following example the container provides a list of Person objects. We are only interested in the age property, so we change the type from **Person** to **double**. In the **select** enumerator you have to provide the projection function. 
 ```
-struct Person
-{
+struct Person {
 	std::string _name;
 	double _age;
 };
@@ -81,11 +81,10 @@ auto siblingsAgeEnumerator = DefQuery::from(siblings)
 	.select([](const Person& currentSibling) { return currentSibling._age; });
 ```
 ## Sorting
-The enumerator chain sorting needs a comparator function to be able to decide which element comes after the other. The comparator shall be specified in a form of a lambda expression. When two elements evaluates to be equal by the comparator then further rules can be specified (**thenby(....)**) to decide about the order.
-Sorting is a special enumeration case; all elements must be available to do the sorting correctly. So the sorting enumerator reads in all elements (when its operator++ is called the first time) from the previous stages, buffers them and sorts them. Then this sorted buffer can be consumed by the further stages.
+The enumerator chain sorting needs a comparator function to be able to decide which element comes after the other. The comparator shall be specified in a form of a lambda expression. If two elements evaluates to be equal by the comparator then further rules can be specified (**thenby(....)**) to decide about the order.
+Sorting is a special enumeration case; all elements must be available to do the sorting correctly. So the sorting enumerator reads in all elements (when its **operator++** is called the first time) from the previous stages, buffers them and sorts them. Then this sorted buffer can be consumed by the further stages.
 ```
-struct Person
-{
+struct Person {
 	std::string _name;
 	double _age;
 	std::vector<std::string> _pets;
@@ -116,17 +115,16 @@ auto myVector = DefQuery::from(numbers)
 	.vector();
 // For complexer containers (like associative containers), there is no direct function, use the store()
 auto squareMapping = DefQuery::from(numbers)
-	.store<std::map<double, double>>([](auto& map, auto& number) { map.emplace(number, numer*number); });
+	.store<std::map<double, double>>([](auto& map, auto& number) { map.emplace(number, number*number); });
 ```
 
 ## Type decaying
 When the enumerator chain is built up, it creates many composed types. So we would get some composed templates like that: **select_enumerator<where_enumerator<from_enumerato<....>>>**. As long as we use the **auto** keyword we can hide this complexity.
 
-But what can you do if you want to use such an enumeration in a function argument, or you want to return an enumeration and you do not want to use templates there (or auto as return type). Then you have to decay the type of the composed enumerator.
+But what can you do if you want to use such an enumeration in a function argument, or you want to return an enumeration and you do not want to use templates there. Then you have to decay the type of the composed enumerator.
 
 ```
-struct Person
-{
+struct Person {
 	std::string _name;
 	double _age;
 };
@@ -181,8 +179,8 @@ std::vector<Person> persons = {
    Person{ "Agnes", 15, { "cat", "bird" } } 
 };
 
-// Group by the first letter of the name
 auto enumerator = DefQuery::from(persons)
+    // Group by the first letter of the name
 	.groupby([](const auto& person) { return person._name[0]; });	
 
 while(++enumerator) {
@@ -206,7 +204,7 @@ When a chain is set up, the query is not executed yet. As soon as the chain is c
 This style of usage also eliminates the need to evalute the query, write the results into a container, and then pass this container to the next stage of processing.
 
 ## Lifecycle of a chain
-* Enumerators can be consumed only once, and then they are "exhausted". There is no way to "rewind" the enumerator to the beginning.
+* Enumerators can be consumed only once, and then they are "exhausted". There is no way to "rewind" the enumerator to the beginning. If you want to execute a query multiple times, create copies of it - see the details below.
 
 * Normally enumerator chains are created on the stack. They do not own the underlying container, so it is up to the user to make sure that the container is still alive when the enumeration runs. Moreover the user must take care that the iterators used in the enumerator chain are not invalidated when the container changes. It is the safest not to change the container when it is being enumerated.
 
