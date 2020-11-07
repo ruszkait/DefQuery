@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.1)
 
-project(DefQuery)
-message(STATUS "Begin Project container " ${PROJECT_NAME})
+project(DefQuery CXX)
 
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
-message(STATUS "Conan configured")
+include(cmake/conan.cmake)
+conan_cmake_run(REQUIRES gtest/1.10.0
+				BASIC_SETUP CMAKE_TARGETS
+				BUILD missing)
 
 
 set(CMAKE_CXX_STANDARD 14)
@@ -14,9 +14,10 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_library(${PROJECT_NAME} INTERFACE)
 target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
-message(STATUS "End Project container " ${PROJECT_NAME})
 
 # testing
+option(ENABLE_TESTING "Enable test builds" ON)
+if (ENABLE_TESTING)
 set(PROJECT_TEST_NAME ${PROJECT_NAME}Test)
 
 add_executable(${PROJECT_TEST_NAME})
@@ -52,11 +53,9 @@ PRIVATE
 	
 
 	
-target_link_libraries(${PROJECT_TEST_NAME} ${CONAN_LIBS} ${PROJECT_NAME})
+target_link_libraries(${PROJECT_TEST_NAME} CONAN_PKG::gtest ${PROJECT_NAME})
 
 enable_testing()
 
-message(STATUS "rtam directory " ${PROJECT_BINARY_DIR}/bin/${PROJECT_TEST_NAME}.exe)	
-
-
 add_test(NAME ${PROJECT_TEST_NAME} COMMAND ${PROJECT_BINARY_DIR}/bin/${PROJECT_TEST_NAME})
+endif()
