@@ -4,18 +4,17 @@
 
 TEST(GeneratorTest, QuadraticTest)
 {
-	auto evenQuadraticNumbers = DefQuery::generator<int>([_currentIndependent = 0](int& nextValue) mutable
-	{
-		// Calculate current value
-		nextValue = _currentIndependent * _currentIndependent;
+	auto evenQuadraticNumbers =
+		DefQuery::generator<int>([_currentIndependent = 0](int& nextValue) mutable {
+			// Calculate current value
+			nextValue = _currentIndependent * _currentIndependent;
 
-		// Move to next state
-		++_currentIndependent;
+			// Move to next state
+			++_currentIndependent;
 
-		// Infinite sequence, never gets exhausted
-		return true;
-	})
-		.where([](const int a) { return a % 2 == 0; });
+			// Infinite sequence, never gets exhausted
+			return true;
+		}).where([](const int a) { return a % 2 == 0; });
 
 	ASSERT_TRUE(++evenQuadraticNumbers);
 	ASSERT_EQ(0, *evenQuadraticNumbers);
@@ -29,17 +28,17 @@ TEST(GeneratorTest, QuadraticTest)
 
 TEST(GeneratorTest, CopyTest)
 {
-	auto evenQuadraticNumbers = DefQuery::generator<int>([_currentIndependent = 0](int& nextValue) mutable
-	{
-		// Calculate current value
-		nextValue = _currentIndependent * _currentIndependent;
+	auto evenQuadraticNumbers =
+		DefQuery::generator<int>([_currentIndependent = 0](int& nextValue) mutable {
+			// Calculate current value
+			nextValue = _currentIndependent * _currentIndependent;
 
-		// Move to next state
-		++_currentIndependent;
+			// Move to next state
+			++_currentIndependent;
 
-		// Infinite sequence, never gets exhausted
-		return true;
-	});
+			// Infinite sequence, never gets exhausted
+			return true;
+		});
 
 	auto evenQuadraticNumbersCopy = evenQuadraticNumbers;
 
@@ -64,17 +63,17 @@ TEST(GeneratorTest, CopyTest)
 
 TEST(GeneratorTest, MoveTest)
 {
-	auto evenQuadraticNumbers = DefQuery::generator<int>([_currentIndependent = 0](int& nextValue) mutable
-	{
-		// Calculate current value
-		nextValue = _currentIndependent * _currentIndependent;
+	auto evenQuadraticNumbers =
+		DefQuery::generator<int>([_currentIndependent = 0](int& nextValue) mutable {
+			// Calculate current value
+			nextValue = _currentIndependent * _currentIndependent;
 
-		// Move to next state
-		++_currentIndependent;
+			// Move to next state
+			++_currentIndependent;
 
-		// Infinite sequence, never gets exhausted
-		return true;
-	});
+			// Infinite sequence, never gets exhausted
+			return true;
+		});
 
 	auto evenQuadraticNumbers2 = std::move(evenQuadraticNumbers);
 

@@ -1,26 +1,24 @@
 #include "gtest/gtest.h"
-#include <list>
-#include <string>
-#include <sstream>
-#include <DefQuery/from.h>
 #include <DefQuery/first.h>
+#include <DefQuery/from.h>
+#include <list>
+#include <sstream>
+#include <string>
 
 TEST(FirstTest, ListFirstElementTest)
 {
-	std::list<int> list = { 1,2,3 };
+	std::list<int> list = {1, 2, 3};
 
-	auto firstElement = DefQuery::from(list)
-		.first();
+	auto firstElement = DefQuery::from(list).first();
 
 	ASSERT_EQ(1, firstElement);
 }
 
 TEST(FirstTest, FirstOrDefaultFirstElementTest)
 {
-	std::list<int> list = { 1,2,3 };
+	std::list<int> list = {1, 2, 3};
 
-	auto firstElement = DefQuery::from(list)
-		.first_or_default();
+	auto firstElement = DefQuery::from(list).first_or_default();
 
 	ASSERT_EQ(1, firstElement);
 }
@@ -36,8 +34,7 @@ TEST(FirstTest, FirstOrDefaultEmptySourceEnumerationTest)
 {
 	std::list<int> list;
 
-	auto defaultElement = DefQuery::from(list)
-		.first_or_default();
+	auto defaultElement = DefQuery::from(list).first_or_default();
 
 	ASSERT_EQ(0, defaultElement);
 }

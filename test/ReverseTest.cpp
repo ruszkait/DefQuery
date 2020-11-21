@@ -1,14 +1,13 @@
 #include "gtest/gtest.h"
-#include <list>
 #include <DefQuery/from.h>
 #include <DefQuery/reverse.h>
+#include <list>
 
 TEST(ReverseTest, ReverseTest)
 {
-	std::list<int> list = { 1,3,7 };
+	std::list<int> list = {1, 3, 7};
 
-	auto enumerator = DefQuery::from(list)
-		.reverse();
+	auto enumerator = DefQuery::from(list).reverse();
 
 	ASSERT_TRUE(++enumerator);
 	ASSERT_EQ(7, *enumerator);
@@ -24,8 +23,7 @@ TEST(ReverseTest, EmptyTest)
 {
 	std::list<int> list;
 
-	auto enumerator = DefQuery::from(list)
-		.reverse();
+	auto enumerator = DefQuery::from(list).reverse();
 
 	ASSERT_FALSE(++enumerator);
 	ASSERT_FALSE(++enumerator);
@@ -33,10 +31,9 @@ TEST(ReverseTest, EmptyTest)
 
 TEST(ReverseTest, CopyTest)
 {
-	std::list<int> list = { 1,3,7 };
+	std::list<int> list = {1, 3, 7};
 
-	auto enumerator = DefQuery::from(list)
-		.reverse();
+	auto enumerator = DefQuery::from(list).reverse();
 
 	auto enumerator2 = enumerator;
 
@@ -61,10 +58,9 @@ TEST(ReverseTest, CopyTest)
 
 TEST(ReverseTest, CopyStartedTest)
 {
-	std::list<int> list = { 1,3,7 };
+	std::list<int> list = {1, 3, 7};
 
-	auto enumerator = DefQuery::from(list)
-		.reverse();
+	auto enumerator = DefQuery::from(list).reverse();
 
 	ASSERT_TRUE(++enumerator);
 	ASSERT_EQ(7, *enumerator);
@@ -88,10 +84,9 @@ TEST(ReverseTest, CopyStartedTest)
 
 TEST(ReverseTest, MoveTest)
 {
-	std::list<int> list = { 1,3,7 };
+	std::list<int> list = {1, 3, 7};
 
-	auto enumerator = DefQuery::from(list)
-		.reverse();
+	auto enumerator = DefQuery::from(list).reverse();
 
 	auto enumerator2 = std::move(enumerator);
 
@@ -108,13 +103,11 @@ TEST(ReverseTest, MoveTest)
 	ASSERT_FALSE(++enumerator);
 }
 
-
 TEST(ReverseTest, MoveStartedTest)
 {
-	std::list<int> list = { 1,3,7 };
+	std::list<int> list = {1, 3, 7};
 
-	auto enumerator = DefQuery::from(list)
-		.reverse();
+	auto enumerator = DefQuery::from(list).reverse();
 
 	ASSERT_TRUE(++enumerator);
 	ASSERT_EQ(7, *enumerator);

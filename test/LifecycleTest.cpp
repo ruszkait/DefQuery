@@ -1,24 +1,24 @@
 #include "gtest/gtest.h"
+#include <DefQuery/decay.h>
+#include <DefQuery/from.h>
+#include <DefQuery/orderby.h>
+#include <DefQuery/range.h>
+#include <DefQuery/select.h>
+#include <DefQuery/stlrange.h>
+#include <DefQuery/where.h>
+#include <ctime>
 #include <list>
 #include <regex>
 #include <string>
-#include <ctime>
-#include <DefQuery/from.h>
-#include <DefQuery/range.h>
-#include <DefQuery/stlrange.h>
-#include <DefQuery/where.h>
-#include <DefQuery/select.h>
-#include <DefQuery/orderby.h>
-#include <DefQuery/decay.h>
 
 TEST(LifecycleTest, DuplicateQueryTest)
 {
-	std::list<int> list = { 1,2,3,4,5,6 };
+	std::list<int> list = {1, 2, 3, 4, 5, 6};
 
 	// With the fluent call API the previous enumerator stage will be moved into the next enumerator stage
 	auto originalEnumerator = DefQuery::from(list)
-		.where([](const int a) { return a > 3 && a < 6; })
-		.select([](const int a) { return a * 10; });
+								  .where([](const int a) { return a > 3 && a < 6; })
+								  .select([](const int a) { return a * 10; });
 
 	// A copy of the enumerator is independent of the original one, they do not share state after
 	// the copy is created
@@ -51,18 +51,19 @@ TEST(LifecycleTest, DuplicateQueryTest)
 
 TEST(LifecycleTest, ForkQueryTest)
 {
-	std::list<int> list = { 1,6,3,8,9,2,7,5,4 };
+	std::list<int> list = {1, 6, 3, 8, 9, 2, 7, 5, 4};
 
 	auto originalEnumerator = DefQuery::from(list)
-		.where([](const int a) { return a > 3 && a < 9; })
-		.orderby(DefQuery::sorting_order::ascending);
+								  .where([](const int a) { return a > 3 && a < 9; })
+								  .orderby(DefQuery::sorting_order::ascending);
 
 	// As the source enumerator (originalEnumerator) is not an rvalue, but an lvalue,
 	// the enumerator stages from it are copied to the extendedEnumerator.
 	// Appending further stages (extendedEnumerator) are again moves the previous stages.
-	auto extendedEnumerator = originalEnumerator
-		.where([](const int a) { return a % 2 == 0; })
-		.select([](const int a) { return a * 10; });
+	auto extendedEnumerator =
+		originalEnumerator.where([](const int a) { return a % 2 == 0; }).select([](const int a) {
+			return a * 10;
+		});
 
 	ASSERT_TRUE(++originalEnumerator);
 	ASSERT_EQ(4, *originalEnumerator);
@@ -89,17 +90,17 @@ TEST(LifecycleTest, ForkQueryTest)
 
 TEST(LifecycleTest, ForkQueryWithDecayTest)
 {
-	std::list<int> list = { 1,6,3,8,9,2,7,5,4 };
+	std::list<int> list = {1, 6, 3, 8, 9, 2, 7, 5, 4};
 
 	// Decay an rvalue -> the rvalue enumerator chain will be moved to the heap
-	DefQuery::decayed_enumerator<int> originalEnumerator = DefQuery::from(list)
-		.where([](const int a) { return a > 3 && a < 9; })
-		.orderby(DefQuery::sorting_order::ascending)
-		.decay();
+	DefQuery::decayed_enumerator<int> originalEnumerator =
+		DefQuery::from(list)
+			.where([](const int a) { return a > 3 && a < 9; })
+			.orderby(DefQuery::sorting_order::ascending)
+			.decay();
 
 	// Decay an lvalue -> this is going to make an independent copy of the chain (originalEnumerator) before the decay
-	auto copiedEnumerator = originalEnumerator
-		.decay();
+	auto copiedEnumerator = originalEnumerator.decay();
 
 	// Makes a copy of the decayed chain (copiedEnumerator)
 	auto secondCopiedEnumerator = copiedEnumerator;
@@ -150,4 +151,3 @@ TEST(LifecycleTest, ForkQueryWithDecayTest)
 	ASSERT_FALSE(++secondCopiedEnumerator);
 	ASSERT_FALSE(++secondCopiedEnumerator);
 }
-

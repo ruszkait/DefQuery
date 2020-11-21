@@ -1,15 +1,15 @@
 #include "gtest/gtest.h"
-#include <map>
-#include <string>
 #include <DefQuery/from.h>
-#include <DefQuery/where.h>
 #include <DefQuery/join.h>
 #include <DefQuery/stlrange.h>
+#include <DefQuery/where.h>
+#include <map>
+#include <string>
 
 TEST(JoinTest, InnerJoinTest)
 {
-	std::map<int, std::string> names = { {5, "John"}, {7, "James"}, {11, "Peter"} };
-	std::map<int, double> heights = { {7, 1.90}, {5, 1.80}, {11, 1.70} };
+	std::map<int, std::string> names = {{5, "John"}, {7, "James"}, {11, "Peter"}};
+	std::map<int, double> heights = {{7, 1.90}, {5, 1.80}, {11, 1.70}};
 
 	struct PersonData
 	{
@@ -17,11 +17,21 @@ TEST(JoinTest, InnerJoinTest)
 		double _height;
 	};
 
-	auto enumerator = DefQuery::from(names)
-		.join(DefQuery::from(heights),
-			[](const auto& namesEntry) { auto key = namesEntry.first; return key; },
-			[](const auto& heightsEntry) { auto key = heightsEntry.first; return key; },
-			[](const auto& namesEntry, const auto& heightsEntry) { auto& name = namesEntry.second; auto height = heightsEntry.second; return PersonData{ name, height }; });
+	auto enumerator = DefQuery::from(names).join(
+		DefQuery::from(heights),
+		[](const auto& namesEntry) {
+			auto key = namesEntry.first;
+			return key;
+		},
+		[](const auto& heightsEntry) {
+			auto key = heightsEntry.first;
+			return key;
+		},
+		[](const auto& namesEntry, const auto& heightsEntry) {
+			auto& name = namesEntry.second;
+			auto height = heightsEntry.second;
+			return PersonData{name, height};
+		});
 
 	ASSERT_TRUE(++enumerator);
 	ASSERT_EQ("John", enumerator->_name);
@@ -38,8 +48,8 @@ TEST(JoinTest, InnerJoinTest)
 
 TEST(JoinTest, CopyTest)
 {
-	std::map<int, std::string> names = { {5, "John"}, {7, "James"}, {11, "Peter"} };
-	std::map<int, double> heights = { {7, 1.90}, {5, 1.80}, {11, 1.70} };
+	std::map<int, std::string> names = {{5, "John"}, {7, "James"}, {11, "Peter"}};
+	std::map<int, double> heights = {{7, 1.90}, {5, 1.80}, {11, 1.70}};
 
 	struct PersonData
 	{
@@ -47,11 +57,21 @@ TEST(JoinTest, CopyTest)
 		double _height;
 	};
 
-	auto enumerator = DefQuery::from(names)
-		.join(DefQuery::from(heights),
-			[](const auto& namesEntry) { auto key = namesEntry.first; return key; },
-			[](const auto& heightsEntry) { auto key = heightsEntry.first; return key; },
-			[](const auto& namesEntry, const auto& heightsEntry) { auto& name = namesEntry.second; auto height = heightsEntry.second; return PersonData{ name, height }; });
+	auto enumerator = DefQuery::from(names).join(
+		DefQuery::from(heights),
+		[](const auto& namesEntry) {
+			auto key = namesEntry.first;
+			return key;
+		},
+		[](const auto& heightsEntry) {
+			auto key = heightsEntry.first;
+			return key;
+		},
+		[](const auto& namesEntry, const auto& heightsEntry) {
+			auto& name = namesEntry.second;
+			auto height = heightsEntry.second;
+			return PersonData{name, height};
+		});
 
 	auto enumerator2 = enumerator;
 
@@ -82,8 +102,8 @@ TEST(JoinTest, CopyTest)
 
 TEST(JoinTest, MoveTest)
 {
-	std::map<int, std::string> names = { {5, "John"}, {7, "James"}, {11, "Peter"} };
-	std::map<int, double> heights = { {7, 1.90}, {5, 1.80}, {11, 1.70} };
+	std::map<int, std::string> names = {{5, "John"}, {7, "James"}, {11, "Peter"}};
+	std::map<int, double> heights = {{7, 1.90}, {5, 1.80}, {11, 1.70}};
 
 	struct PersonData
 	{
@@ -91,11 +111,21 @@ TEST(JoinTest, MoveTest)
 		double _height;
 	};
 
-	auto enumerator = DefQuery::from(names)
-		.join(DefQuery::from(heights),
-			[](const auto& namesEntry) { auto key = namesEntry.first; return key; },
-			[](const auto& heightsEntry) { auto key = heightsEntry.first; return key; },
-			[](const auto& namesEntry, const auto& heightsEntry) { auto& name = namesEntry.second; auto height = heightsEntry.second; return PersonData{ name, height }; });
+	auto enumerator = DefQuery::from(names).join(
+		DefQuery::from(heights),
+		[](const auto& namesEntry) {
+			auto key = namesEntry.first;
+			return key;
+		},
+		[](const auto& heightsEntry) {
+			auto key = heightsEntry.first;
+			return key;
+		},
+		[](const auto& namesEntry, const auto& heightsEntry) {
+			auto& name = namesEntry.second;
+			auto height = heightsEntry.second;
+			return PersonData{name, height};
+		});
 
 	auto enumerator2 = std::move(enumerator);
 

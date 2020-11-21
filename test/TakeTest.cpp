@@ -1,14 +1,13 @@
 #include "gtest/gtest.h"
-#include <list>
 #include <DefQuery/from.h>
 #include <DefQuery/take.h>
+#include <list>
 
 TEST(TakeTest, SimpleTest)
 {
-	std::list<int> list = { 1,2,3,4,5,6 };
+	std::list<int> list = {1, 2, 3, 4, 5, 6};
 
-	auto enumerator = DefQuery::from(list)
-		.take(3);
+	auto enumerator = DefQuery::from(list).take(3);
 
 	ASSERT_TRUE(++enumerator);
 	ASSERT_EQ(1, *enumerator);
@@ -24,8 +23,7 @@ TEST(TakeTest, EmptyTest)
 {
 	std::list<int> list;
 
-	auto enumerator = DefQuery::from(list)
-		.take(3);
+	auto enumerator = DefQuery::from(list).take(3);
 
 	ASSERT_FALSE(++enumerator);
 	ASSERT_FALSE(++enumerator);
@@ -33,10 +31,9 @@ TEST(TakeTest, EmptyTest)
 
 TEST(TakeTest, CopyTest)
 {
-	std::list<int> list = { 1,2,3,4,5,6 };
+	std::list<int> list = {1, 2, 3, 4, 5, 6};
 
-	auto enumerator = DefQuery::from(list)
-		.take(3);
+	auto enumerator = DefQuery::from(list).take(3);
 
 	auto enumeratorCopy = enumerator;
 
@@ -61,10 +58,9 @@ TEST(TakeTest, CopyTest)
 
 TEST(TakeTest, MoveTest)
 {
-	std::list<int> list = { 1,2,3,4,5,6 };
+	std::list<int> list = {1, 2, 3, 4, 5, 6};
 
-	auto enumerator = DefQuery::from(list)
-		.take(3);
+	auto enumerator = DefQuery::from(list).take(3);
 
 	auto enumerator2 = std::move(enumerator);
 

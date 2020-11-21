@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
+#include <DefQuery/range.h>
 #include <list>
 #include <vector>
-#include <DefQuery/range.h>
 
 TEST(RangeTest, EmptyRangeTest)
 {
@@ -29,8 +29,7 @@ TEST(RangeTest, IncreasingNumberTest)
 
 TEST(RangeTest, SteppingNumberTest)
 {
-	auto enumerator = DefQuery::range(1, 12)
-		.step(3);
+	auto enumerator = DefQuery::range(1, 12).step(3);
 
 	ASSERT_TRUE(++enumerator);
 	ASSERT_EQ(1, *enumerator);
@@ -46,7 +45,7 @@ TEST(RangeTest, SteppingNumberTest)
 
 TEST(RangeTest, PointerTest)
 {
-	std::vector<int> vector = { 1,2,3,4,5,6 };
+	std::vector<int> vector = {1, 2, 3, 4, 5, 6};
 
 	auto enumerator = DefQuery::range(&vector[0], &vector[4]);
 
@@ -65,7 +64,7 @@ TEST(RangeTest, PointerTest)
 
 TEST(RangeTest, IteratorTest)
 {
-	std::list<int> list = { 1,2,3 };
+	std::list<int> list = {1, 2, 3};
 
 	auto enumerator = DefQuery::range(list.begin(), list.end());
 

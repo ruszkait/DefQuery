@@ -1,14 +1,13 @@
 #include "gtest/gtest.h"
-#include <list>
 #include <DefQuery/from.h>
 #include <DefQuery/takewhile.h>
+#include <list>
 
 TEST(TakeWhileTest, SimpleTest)
 {
-	std::list<int> list = { 1,2,3,4,5,6 };
+	std::list<int> list = {1, 2, 3, 4, 5, 6};
 
-	auto enumerator = DefQuery::from(list)
-		.takewhile([](auto number) { return number < 4; });
+	auto enumerator = DefQuery::from(list).takewhile([](auto number) { return number < 4; });
 
 	ASSERT_TRUE(++enumerator);
 	ASSERT_EQ(1, *enumerator);
@@ -24,8 +23,7 @@ TEST(TakeWhileTest, EmptyTest)
 {
 	std::list<int> list;
 
-	auto enumerator = DefQuery::from(list)
-		.takewhile([](auto number) { return number < 4; });
+	auto enumerator = DefQuery::from(list).takewhile([](auto number) { return number < 4; });
 
 	ASSERT_FALSE(++enumerator);
 	ASSERT_FALSE(++enumerator);
@@ -33,10 +31,9 @@ TEST(TakeWhileTest, EmptyTest)
 
 TEST(TakeWhileTest, CopyTest)
 {
-	std::list<int> list = { 1,2,3,4,5,6 };
+	std::list<int> list = {1, 2, 3, 4, 5, 6};
 
-	auto enumerator = DefQuery::from(list)
-		.takewhile([](auto number) { return number < 4; });
+	auto enumerator = DefQuery::from(list).takewhile([](auto number) { return number < 4; });
 
 	auto enumeratorCopy = enumerator;
 
@@ -61,10 +58,9 @@ TEST(TakeWhileTest, CopyTest)
 
 TEST(TakeWhileTest, MoveTest)
 {
-	std::list<int> list = { 1,2,3,4,5,6 };
+	std::list<int> list = {1, 2, 3, 4, 5, 6};
 
-	auto enumerator = DefQuery::from(list)
-		.takewhile([](auto number) { return number < 4; });
+	auto enumerator = DefQuery::from(list).takewhile([](auto number) { return number < 4; });
 
 	auto enumerator2 = std::move(enumerator);
 

@@ -1,22 +1,21 @@
 #include "gtest/gtest.h"
-#include <list>
 #include <DefQuery/from.h>
 #include <DefQuery/groupby.h>
+#include <list>
 
 TEST(GroupByTest, EvenOddNumbersTest)
 {
-	std::list<int> list = { 1,8,7,11 };
+	std::list<int> list = {1, 8, 7, 11};
 
-	auto enumerator = DefQuery::from(list)
-		.groupby([](int a) { return a % 2 == 0; });
+	auto enumerator = DefQuery::from(list).groupby([](int a) { return a % 2 == 0; });
 
 	ASSERT_TRUE(++enumerator);
 	ASSERT_EQ(false, enumerator->_key);
-	std::vector<int> oddNumbers = { 1,7,11 };
+	std::vector<int> oddNumbers = {1, 7, 11};
 	ASSERT_EQ(oddNumbers, enumerator->_members);
 	ASSERT_TRUE(++enumerator);
 	ASSERT_EQ(true, enumerator->_key);
-	std::vector<int> evenNumbers = { 8 };
+	std::vector<int> evenNumbers = {8};
 	ASSERT_EQ(evenNumbers, enumerator->_members);
 	ASSERT_FALSE(++enumerator);
 	ASSERT_FALSE(++enumerator);
@@ -31,19 +30,17 @@ TEST(GroupByTest, NameGroupingTest)
 		std::vector<std::string> _pets;
 	};
 
-	std::vector<Person> persons = {
-	   Person{ "Oliver", 10 , { "dog", "cat" }},
-	   Person{ "Hanna", 19, { "fish", "bird" } },
-	   Person{ "Arnold", 11, { "fish", "bird" } },
-	   Person{ "Henrik", 19, { "fish", "bird" } },
-	   Person{ "Peter", 20, { "dog", "bird" } },
-	   Person{ "Harald", 19, { "fish", "bird" } },
-	   Person{ "Agnes", 15, { "cat", "bird" } }
-	};
+	std::vector<Person> persons = {Person{"Oliver", 10, {"dog", "cat"}},
+								   Person{"Hanna", 19, {"fish", "bird"}},
+								   Person{"Arnold", 11, {"fish", "bird"}},
+								   Person{"Henrik", 19, {"fish", "bird"}},
+								   Person{"Peter", 20, {"dog", "bird"}},
+								   Person{"Harald", 19, {"fish", "bird"}},
+								   Person{"Agnes", 15, {"cat", "bird"}}};
 
 	// Group by the first letter of the name
-	auto enumerator = DefQuery::from(persons)
-		.groupby([](const auto& person) { return person._name[0]; });
+	auto enumerator =
+		DefQuery::from(persons).groupby([](const auto& person) { return person._name[0]; });
 
 	ASSERT_TRUE(++enumerator);
 	ASSERT_EQ('O', enumerator->_key);
@@ -70,18 +67,16 @@ TEST(GroupByTest, CopyTest)
 		std::vector<std::string> _pets;
 	};
 
-	std::vector<Person> persons = {
-	   Person{ "Oliver", 10 , { "dog", "cat" }},
-	   Person{ "Hanna", 19, { "fish", "bird" } },
-	   Person{ "Arnold", 11, { "fish", "bird" } },
-	   Person{ "Henrik", 19, { "fish", "bird" } },
-	   Person{ "Peter", 20, { "dog", "bird" } },
-	   Person{ "Harald", 19, { "fish", "bird" } },
-	   Person{ "Agnes", 15, { "cat", "bird" } }
-	};
+	std::vector<Person> persons = {Person{"Oliver", 10, {"dog", "cat"}},
+								   Person{"Hanna", 19, {"fish", "bird"}},
+								   Person{"Arnold", 11, {"fish", "bird"}},
+								   Person{"Henrik", 19, {"fish", "bird"}},
+								   Person{"Peter", 20, {"dog", "bird"}},
+								   Person{"Harald", 19, {"fish", "bird"}},
+								   Person{"Agnes", 15, {"cat", "bird"}}};
 
-	auto enumerator = DefQuery::from(persons)
-		.groupby([](const auto& person) { return person._name[0]; });
+	auto enumerator =
+		DefQuery::from(persons).groupby([](const auto& person) { return person._name[0]; });
 
 	auto enumerator2 = enumerator;
 
@@ -125,18 +120,16 @@ TEST(GroupByTest, MoveTest)
 		std::vector<std::string> _pets;
 	};
 
-	std::vector<Person> persons = {
-	   Person{ "Oliver", 10 , { "dog", "cat" }},
-	   Person{ "Hanna", 19, { "fish", "bird" } },
-	   Person{ "Arnold", 11, { "fish", "bird" } },
-	   Person{ "Henrik", 19, { "fish", "bird" } },
-	   Person{ "Peter", 20, { "dog", "bird" } },
-	   Person{ "Harald", 19, { "fish", "bird" } },
-	   Person{ "Agnes", 15, { "cat", "bird" } }
-	};
+	std::vector<Person> persons = {Person{"Oliver", 10, {"dog", "cat"}},
+								   Person{"Hanna", 19, {"fish", "bird"}},
+								   Person{"Arnold", 11, {"fish", "bird"}},
+								   Person{"Henrik", 19, {"fish", "bird"}},
+								   Person{"Peter", 20, {"dog", "bird"}},
+								   Person{"Harald", 19, {"fish", "bird"}},
+								   Person{"Agnes", 15, {"cat", "bird"}}};
 
-	auto enumerator = DefQuery::from(persons)
-		.groupby([](const auto& person) { return person._name[0]; });
+	auto enumerator =
+		DefQuery::from(persons).groupby([](const auto& person) { return person._name[0]; });
 
 	auto enumerator2 = std::move(enumerator);
 
@@ -168,18 +161,16 @@ TEST(GroupByTest, CopyStartedTest)
 		std::vector<std::string> _pets;
 	};
 
-	std::vector<Person> persons = {
-	   Person{ "Oliver", 10 , { "dog", "cat" }},
-	   Person{ "Hanna", 19, { "fish", "bird" } },
-	   Person{ "Arnold", 11, { "fish", "bird" } },
-	   Person{ "Henrik", 19, { "fish", "bird" } },
-	   Person{ "Peter", 20, { "dog", "bird" } },
-	   Person{ "Harald", 19, { "fish", "bird" } },
-	   Person{ "Agnes", 15, { "cat", "bird" } }
-	};
+	std::vector<Person> persons = {Person{"Oliver", 10, {"dog", "cat"}},
+								   Person{"Hanna", 19, {"fish", "bird"}},
+								   Person{"Arnold", 11, {"fish", "bird"}},
+								   Person{"Henrik", 19, {"fish", "bird"}},
+								   Person{"Peter", 20, {"dog", "bird"}},
+								   Person{"Harald", 19, {"fish", "bird"}},
+								   Person{"Agnes", 15, {"cat", "bird"}}};
 
-	auto enumerator = DefQuery::from(persons)
-		.groupby([](const auto& person) { return person._name[0]; });
+	auto enumerator =
+		DefQuery::from(persons).groupby([](const auto& person) { return person._name[0]; });
 
 	ASSERT_TRUE(++enumerator);
 	ASSERT_EQ('O', enumerator->_key);
@@ -221,18 +212,16 @@ TEST(GroupByTest, MoveStartedTest)
 		std::vector<std::string> _pets;
 	};
 
-	std::vector<Person> persons = {
-	   Person{ "Oliver", 10 , { "dog", "cat" }},
-	   Person{ "Hanna", 19, { "fish", "bird" } },
-	   Person{ "Arnold", 11, { "fish", "bird" } },
-	   Person{ "Henrik", 19, { "fish", "bird" } },
-	   Person{ "Peter", 20, { "dog", "bird" } },
-	   Person{ "Harald", 19, { "fish", "bird" } },
-	   Person{ "Agnes", 15, { "cat", "bird" } }
-	};
+	std::vector<Person> persons = {Person{"Oliver", 10, {"dog", "cat"}},
+								   Person{"Hanna", 19, {"fish", "bird"}},
+								   Person{"Arnold", 11, {"fish", "bird"}},
+								   Person{"Henrik", 19, {"fish", "bird"}},
+								   Person{"Peter", 20, {"dog", "bird"}},
+								   Person{"Harald", 19, {"fish", "bird"}},
+								   Person{"Agnes", 15, {"cat", "bird"}}};
 
-	auto enumerator = DefQuery::from(persons)
-		.groupby([](const auto& person) { return person._name[0]; });
+	auto enumerator =
+		DefQuery::from(persons).groupby([](const auto& person) { return person._name[0]; });
 
 	ASSERT_TRUE(++enumerator);
 	ASSERT_EQ('O', enumerator->_key);

@@ -1,14 +1,13 @@
 #include "gtest/gtest.h"
-#include <list>
 #include <DefQuery/from.h>
 #include <DefQuery/where.h>
+#include <list>
 
 TEST(WhereTest, FilterTest)
 {
-	std::list<int> list = { 1,2,3,4,5,6 };
+	std::list<int> list = {1, 2, 3, 4, 5, 6};
 
-	auto enumerator = DefQuery::from(list)
-		.where([](const int a) { return a < 4 || a > 5; });
+	auto enumerator = DefQuery::from(list).where([](const int a) { return a < 4 || a > 5; });
 
 	ASSERT_TRUE(++enumerator);
 	ASSERT_EQ(1, *enumerator);
@@ -26,8 +25,7 @@ TEST(WhereTest, EmptyTest)
 {
 	std::list<int> list;
 
-	auto enumerator = DefQuery::from(list)
-		.where([](const int a) { return a < 4 || a > 5; });
+	auto enumerator = DefQuery::from(list).where([](const int a) { return a < 4 || a > 5; });
 
 	ASSERT_FALSE(++enumerator);
 	ASSERT_FALSE(++enumerator);
@@ -35,10 +33,9 @@ TEST(WhereTest, EmptyTest)
 
 TEST(WhereTest, CopyTest)
 {
-	std::list<int> list = { 1,2,3,4,5,6 };
+	std::list<int> list = {1, 2, 3, 4, 5, 6};
 
-	auto enumerator = DefQuery::from(list)
-		.where([](const int a) { return a < 4 || a > 5; });
+	auto enumerator = DefQuery::from(list).where([](const int a) { return a < 4 || a > 5; });
 
 	auto enumeratorCopy = enumerator;
 
@@ -67,10 +64,9 @@ TEST(WhereTest, CopyTest)
 
 TEST(WhereTest, MoveTest)
 {
-	std::list<int> list = { 1,2,3,4,5,6 };
+	std::list<int> list = {1, 2, 3, 4, 5, 6};
 
-	auto enumerator = DefQuery::from(list)
-		.where([](const int a) { return a < 4 || a > 5; });
+	auto enumerator = DefQuery::from(list).where([](const int a) { return a < 4 || a > 5; });
 
 	auto enumerator2 = std::move(enumerator);
 

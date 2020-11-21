@@ -1,14 +1,13 @@
 #include "gtest/gtest.h"
-#include <list>
 #include <DefQuery/from.h>
 #include <DefQuery/select.h>
+#include <list>
 
 TEST(SelectTest, ProjectionTest)
 {
-	std::list<int> list = { 1,2,3 };
+	std::list<int> list = {1, 2, 3};
 
-	auto enumerator = DefQuery::from(list)
-		.select([](int a) { return a * 1.5; });
+	auto enumerator = DefQuery::from(list).select([](int a) { return a * 1.5; });
 
 	ASSERT_TRUE(++enumerator);
 	ASSERT_EQ(1.5, *enumerator);
@@ -28,10 +27,9 @@ TEST(SelectTest, StructProjectionTest)
 		double _age;
 	};
 
-	std::vector<Person> list = { Person{ "Oliver", 10 }, Person{ "Hanna", 11 }, Person{ "Peter", 20 } };
+	std::vector<Person> list = {Person{"Oliver", 10}, Person{"Hanna", 11}, Person{"Peter", 20}};
 
-	auto enumerator = DefQuery::from(list)
-		.select([](const Person& person) { return person._age; });
+	auto enumerator = DefQuery::from(list).select([](const Person& person) { return person._age; });
 
 	ASSERT_TRUE(++enumerator);
 	ASSERT_EQ(10, *enumerator);
@@ -51,10 +49,9 @@ TEST(SelectTest, CopyTest)
 		double _age;
 	};
 
-	std::vector<Person> list = { Person{ "Oliver", 10 }, Person{ "Hanna", 11 }, Person{ "Peter", 20 } };
+	std::vector<Person> list = {Person{"Oliver", 10}, Person{"Hanna", 11}, Person{"Peter", 20}};
 
-	auto enumerator = DefQuery::from(list)
-		.select([](const Person& person) { return person._age; });
+	auto enumerator = DefQuery::from(list).select([](const Person& person) { return person._age; });
 
 	auto enumeratorCopy = enumerator;
 
@@ -85,10 +82,9 @@ TEST(SelectTest, MoveTest)
 		double _age;
 	};
 
-	std::vector<Person> lis = { Person{ "Oliver", 10 }, Person{ "Hanna", 11 }, Person{ "Peter", 20 } };
+	std::vector<Person> lis = {Person{"Oliver", 10}, Person{"Hanna", 11}, Person{"Peter", 20}};
 
-	auto enumerator = DefQuery::from(lis)
-		.select([](const Person& person) { return person._age; });
+	auto enumerator = DefQuery::from(lis).select([](const Person& person) { return person._age; });
 
 	auto enumerator2 = std::move(enumerator);
 
