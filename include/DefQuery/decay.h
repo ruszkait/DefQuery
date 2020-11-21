@@ -1,6 +1,6 @@
 #pragma once
 
-#include "enumerator.h"
+#include <DefQuery/enumerator.h>
 #include <memory>
 
 namespace DefQuery

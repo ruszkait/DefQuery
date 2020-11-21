@@ -1,6 +1,6 @@
 #pragma once
 
-#include "enumerator.h"
+#include <DefQuery/enumerator.h>
 #include <array>
 
 namespace DefQuery
