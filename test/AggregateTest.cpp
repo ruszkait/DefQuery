@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include <DefQUery/from.h>
+#include <DefQuery/from.h>
 #include <DefQuery/aggregate.h>
 #include <list>
 #include <sstream>
