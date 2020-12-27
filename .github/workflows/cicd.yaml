@@ -6,13 +6,17 @@ jobs:
     runs-on: ubuntu-latest
     name: build_debug
     steps:
-      - uses: actions/checkout@v2
-      - name: Create build directory
-        shell: bash
-        run: mkdir ${{runner.workspace}}/build
+      - name: Download Conan package manager
+        run: |
+          pip3 install conan
+          conan --version
+      - name: Clone source
+        uses: actions/checkout@v2
       - name: Configure	
         shell: bash
-        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        run: |
+          mkdir ${{runner.workspace}}/build
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
       - name: Build
         shell: bash
         run: cmake --build build -j 16
