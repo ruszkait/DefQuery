@@ -3,7 +3,7 @@ on: push
 
 jobs:
   build_debug:
-    runs-on: conanio/gcc7
+    runs-on: ubuntu-latest
     name: build_debug
     steps:
       - uses: actions/checkout@v2
