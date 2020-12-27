@@ -1,3 +1,5 @@
+![master](https://github.com/ruszkait/DefQuery/workflows/CI/CD/badge.svg?branch=master)
+
 # DefQuery
 Yet another C# LINQ implementation in C++.
 
