@@ -13,6 +13,10 @@ jobs:
           pip3 install wheel setuptools
           pip3 install conan
           export PATH=$PATH:~/.local/bin
+          echo $PATH
+          pwd
+          ls ~/.local/bin
+          sudo ln -s ~/.local/bin/conan /usr/local/bin/conan
           conan --version
       - name: Configure	
         run: |
